@@ -255,7 +255,7 @@ export default function Chat({ selectedAgent }: ChatProps) {
           Limpiar chat
         </button>
       </div>
-      <div className="flex-1 overflow-y-auto space-y-3 mb-4 px-4 max-h-80 chat-scroll">
+      <div className="flex-1 overflow-y-auto space-y-3 mb-4 px-4 max-h-104 chat-scroll">
         {displayMessages.length === 0 && (
           <div className="text-center text-white/60 text-sm py-8">
             <div className="mb-2">
