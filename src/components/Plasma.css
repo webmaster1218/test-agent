@@ -1,0 +1,130 @@
+.plasma-container {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Interactive hover effects */
+.interactive-glow:hover {
+  box-shadow: 0 0 20px rgba(66, 41, 255, 0.3);
+}
+
+/* Smooth transitions for all interactive elements */
+.transition-smooth {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Modern custom scrollbar for chat */
+.chat-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.chat-scroll::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 3px;
+}
+
+.chat-scroll::-webkit-scrollbar-thumb {
+  background: rgba(66, 41, 255, 0.3);
+  border-radius: 3px;
+  transition: all 0.2s ease;
+}
+
+.chat-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(66, 41, 255, 0.5);
+}
+
+.chat-scroll::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Enhanced message animations */
+.message-enter {
+  animation: messageSlideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes messageSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Chat container enhancements */
+.chat-container {
+  background: linear-gradient(135deg, rgba(66, 41, 255, 0.08) 0%, rgba(99, 102, 241, 0.08) 100%);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+/* Message bubble enhancements */
+.message-bubble {
+  position: relative;
+  overflow: hidden;
+}
+
+.message-bubble::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  transition: left 0.6s ease;
+}
+
+.message-bubble:hover::before {
+  left: 100%;
+}
+
+/* Typing indicator enhancement */
+.typing-indicator {
+  background: rgba(66, 41, 255, 0.15);
+  border: 1px solid rgba(66, 41, 255, 0.3);
+}
+
+/* Input field enhancement */
+.chat-input {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+}
+
+.chat-input:focus {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(66, 41, 255, 0.4);
+  box-shadow: 0 0 20px rgba(66, 41, 255, 0.1);
+}
+
+/* Send button enhancement */
+.send-button {
+  background: linear-gradient(135deg, rgba(66, 41, 255, 0.3) 0%, rgba(99, 102, 241, 0.3) 100%);
+  border: 1px solid rgba(66, 41, 255, 0.4);
+  backdrop-filter: blur(10px);
+}
+
+.send-button:hover {
+  background: linear-gradient(135deg, rgba(66, 41, 255, 0.4) 0%, rgba(99, 102, 241, 0.4) 100%);
+  border-color: rgba(66, 41, 255, 0.6);
+  box-shadow: 0 8px 25px rgba(66, 41, 255, 0.2);
+}
