@@ -17,6 +17,16 @@ interface ChatProps {
 export default function Chat({ selectedAgent }: ChatProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState('');
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && e.ctrlKey) {
+      e.preventDefault();
+      setInputText(prev => prev + '\n');
+    } else if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+    }
+  };
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -133,6 +143,9 @@ export default function Chat({ selectedAgent }: ChatProps) {
       localStorage.setItem(`conversationId_${selectedAgent}`, conversationId);
     }
 
+    // Generar un messageId único para este mensaje
+    const messageId = `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
     // Usar la misma estructura que funcionaba para el chat de salud
     const payload = [{
       headers: {
@@ -164,6 +177,7 @@ export default function Chat({ selectedAgent }: ChatProps) {
       query: {},
       body: {
         "conversationId": conversationId,
+        "messageId": messageId,
         "message": message
       },
       "webhookUrl": webhookUrl,
@@ -232,13 +246,7 @@ export default function Chat({ selectedAgent }: ChatProps) {
     setIsTyping(false);
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSend();
-    }
-  };
-
+  
   // All messages are for the current agent (loaded from localStorage)
   const displayMessages = messages;
 
@@ -303,13 +311,14 @@ export default function Chat({ selectedAgent }: ChatProps) {
       </div>
 
       <div className="flex space-x-2 px-4 pb-4">
-        <input
-          type="text"
+        <textarea
           value={inputText}
           onChange={(e) => setInputText(e.target.value)}
-          onKeyPress={handleKeyPress}
-          placeholder="Escribe tu mensaje..."
-          className="flex-1 bg-white/10 text-white placeholder-white/40 px-4 py-2 rounded-lg border border-white/20 focus:outline-none focus:border-blue-400/50 focus:bg-white/15 transition-all duration-200 hover:border-white/30 hover:bg-white/15 chat-input"
+          onKeyDown={handleKeyPress}
+          placeholder="Escribe tu mensaje... (Ctrl+Enter para salto de línea)"
+          className="flex-1 bg-white/10 text-white placeholder-white/40 px-4 py-2 rounded-lg border border-white/20 focus:outline-none focus:border-blue-400/50 focus:bg-white/15 transition-all duration-200 hover:border-white/30 hover:bg-white/15 chat-input resize-none"
+          rows={1}
+          style={{ minHeight: '44px', maxHeight: '120px' }}
         />
         <button
           onClick={handleSend}
