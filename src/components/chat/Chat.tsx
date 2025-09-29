@@ -244,7 +244,7 @@ const sendToWebhook = async (message: string, webhookUrl: string) => {
   const displayMessages = messages;
 
   return (
-    <div className="flex flex-col h-full max-w-xl w-full mx-auto">
+    <div className="flex flex-col max-w-xl w-full mx-auto" style={{ maxHeight: '600px' }}>
       <div className="flex items-center justify-between mb-4 px-4 pt-4">
         <h3 className="text-lg font-semibold text-white tracking-tight">
           Chat de {selectedAgent === 'salud' ? 'Salud' : 'Comida'}
@@ -256,7 +256,7 @@ const sendToWebhook = async (message: string, webhookUrl: string) => {
           Limpiar chat
         </button>
       </div>
-      <div className="flex-1 overflow-y-auto space-y-3 mb-4 px-4 max-h-104 chat-scroll">
+      <div className="overflow-y-auto space-y-3 mb-4 px-4 chat-scroll" style={{ maxHeight: '400px' }}>
         {displayMessages.length === 0 && (
           <div className="text-center text-white/60 text-sm py-8">
             <div className="mb-2">
