@@ -21,7 +21,7 @@
 
 /* Interactive hover effects */
 .interactive-glow:hover {
-  box-shadow: 0 0 20px rgba(66, 41, 255, 0.3);
+  box-shadow: 0 0 20px var(--theme-primary, rgba(66, 41, 255, 0.3));
 }
 
 /* Smooth transitions for all interactive elements */
@@ -40,13 +40,13 @@
 }
 
 .chat-scroll::-webkit-scrollbar-thumb {
-  background: rgba(66, 41, 255, 0.3);
+  background: var(--theme-primary, rgba(66, 41, 255, 0.3));
   border-radius: 3px;
   transition: all 0.2s ease;
 }
 
 .chat-scroll::-webkit-scrollbar-thumb:hover {
-  background: rgba(66, 41, 255, 0.5);
+  background: var(--theme-primary, rgba(66, 41, 255, 0.5));
 }
 
 .chat-scroll::-webkit-scrollbar-corner {
@@ -64,13 +64,13 @@
 }
 
 .chat-input::-webkit-scrollbar-thumb {
-  background: rgba(66, 41, 255, 0.3);
+  background: var(--theme-primary, rgba(66, 41, 255, 0.3));
   border-radius: 3px;
   transition: all 0.2s ease;
 }
 
 .chat-input::-webkit-scrollbar-thumb:hover {
-  background: rgba(66, 41, 255, 0.5);
+  background: var(--theme-primary, rgba(66, 41, 255, 0.5));
 }
 
 .chat-input::-webkit-scrollbar-corner {
@@ -151,4 +151,42 @@
   background: linear-gradient(135deg, rgba(66, 41, 255, 0.4) 0%, rgba(99, 102, 241, 0.4) 100%);
   border-color: rgba(66, 41, 255, 0.6);
   box-shadow: 0 8px 25px rgba(66, 41, 255, 0.2);
+}
+
+/* Custom tooltip for agent capabilities */
+.agent-tooltip {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-8px);
+  background: rgba(0, 0, 0, 0.95);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(66, 41, 255, 0.3);
+  border-radius: 8px;
+  padding: 8px 12px;
+  color: white;
+  font-size: 12px;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  z-index: 1000;
+  pointer-events: none;
+  box-shadow: 0 4px 20px rgba(66, 41, 255, 0.2);
+}
+
+.agent-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: rgba(66, 41, 255, 0.3);
+}
+
+.agent-tooltip.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(-12px);
 }

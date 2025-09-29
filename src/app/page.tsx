@@ -1,12 +1,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Plasma from '@/components/Plasma';
-import Chat from '@/components/Chat';
-import AgentSelector from '@/components/AgentSelector';
+import Plasma from '@/components/ui/Plasma';
+import Chat from '@/components/chat/Chat';
+import AgentSelector from '@/components/ui/AgentSelector';
+import { getAgentTheme } from '@/lib/config/themes';
 
 export default function Home() {
   const [selectedAgent, setSelectedAgent] = useState('salud');
+  const [theme, setTheme] = useState(getAgentTheme('salud'));
 
   useEffect(() => {
     // Load saved agent from localStorage
@@ -15,6 +17,12 @@ export default function Home() {
       setSelectedAgent(savedAgent);
     }
   }, []);
+
+  useEffect(() => {
+    // Update theme when agent changes
+    const newTheme = getAgentTheme(selectedAgent);
+    setTheme(newTheme);
+  }, [selectedAgent]);
 
   const handleAgentChange = (agentId: string) => {
     setSelectedAgent(agentId);
@@ -25,7 +33,7 @@ export default function Home() {
     <div className="min-h-screen bg-black overflow-hidden relative">
       <div className="absolute inset-0">
         <Plasma
-          color="#4229FF"
+          color={theme.plasma}
           speed={0.5}
           direction="forward"
           scale={1.2}
@@ -51,14 +59,23 @@ export default function Home() {
             <AgentSelector
               selectedAgent={selectedAgent}
               onAgentChange={handleAgentChange}
+              theme={theme}
             />
           </div>
         </div>
 
         <main className="flex-1 flex items-start justify-center px-4 pb-8">
           <div className="w-full max-w-xl">
-            <div className="chat-container rounded-2xl p-6 shadow-xl interactive-glow transition-smooth">
-              <Chat selectedAgent={selectedAgent} />
+            <div
+              className="chat-container rounded-2xl p-6 shadow-xl interactive-glow transition-smooth"
+              style={{
+                background: theme.background,
+                borderColor: `${theme.primary}33`,
+                boxShadow: `0 0 20px ${theme.primary}33`,
+                '--theme-primary': theme.primary
+              } as React.CSSProperties}
+            >
+              <Chat selectedAgent={selectedAgent} theme={theme} />
             </div>
           </div>
         </main>

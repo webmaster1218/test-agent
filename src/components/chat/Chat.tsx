@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import { AgentTheme } from '@/lib/config/themes';
+import { WEBHOOK_CONFIG } from '@/lib/config/constants';
 
 interface Message {
   id: string;
@@ -12,21 +14,12 @@ interface Message {
 
 interface ChatProps {
   selectedAgent: string;
+  theme: AgentTheme;
 }
 
-export default function Chat({ selectedAgent }: ChatProps) {
+export default function Chat({ selectedAgent, theme }: ChatProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState('');
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && e.ctrlKey) {
-      e.preventDefault();
-      setInputText(prev => prev + '\n');
-    } else if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSend();
-    }
-  };
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -55,87 +48,37 @@ export default function Chat({ selectedAgent }: ChatProps) {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const clearChat = () => {
-    setMessages([]);
-    localStorage.removeItem(`chat_messages_${selectedAgent}`);
-    localStorage.removeItem(`conversationId_${selectedAgent}`);
-  };
-
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
 
+  const clearChat = () => {
+    setMessages([]);
+    localStorage.removeItem(`chat_messages_${selectedAgent}`);
+    localStorage.removeItem(`conversationId_${selectedAgent}`);
+
+    // Forzar la generación de un nuevo conversationId en el próximo mensaje
+    // Esto hará que parezca una nueva persona/sesión
+  };
+
   const getAgentResponse = (agentId: string): string => {
     const responses = {
-      salud: 'Hola, soy tu asistente de Salud y Bienestar. Estoy aquí para ayudarte con consejos sobre nutrición, ejercicio, salud mental y hábitos saludables. ¿En qué puedo asistirte hoy?',
-      comida: 'Hola, soy tu asistente de Gastronomía. Puedo ayudarte con recetas, técnicas de cocina, consejos de alimentación y recomendaciones culinarias. ¿Qué te gustaría preparar hoy?'
+      salud: 'Hola, soy tu asistente de Salud y Bienestar. Estoy aquí para ayudarte con tratamientos disponibles, agendar citas de valoración y recomendaciones basadas en tus síntomas. ¿En qué puedo asistirte hoy?',
+      comida: '¡Hola! Bienvenido a nuestra taquería. Soy tu asistente y puedo ayudarte con el menú del día, recomendaciones de tacos y tomar tu pedido. ¿Qué te antoja hoy?'
     };
     return responses[agentId as keyof typeof responses] || 'Hola, soy un agente de IA en prueba.';
   };
 
-  const handleSend = async () => {
-    if (!inputText.trim()) return;
+  const formatMessageWithLineBreaks = (text: string) => {
+  return text.split('\n').map((line, index) => (
+    <span key={index}>
+      {line}
+      {index < text.split('\n').length - 1 && <br />}
+    </span>
+  ));
+};
 
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      text: inputText,
-      sender: 'user',
-      timestamp: new Date(),
-      agentId: selectedAgent
-    };
-
-    setMessages(prev => [...prev, userMessage]);
-    setInputText('');
-    setIsTyping(true);
-
-    try {
-      if (selectedAgent === 'salud') {
-        // Usar webhook para el chat de salud
-        await sendToWebhook(inputText, 'https://n8n.vivefelizsindolor.com/webhook/d25d94ff-e996-4044-88e9-9a108118f0f4');
-      } else if (selectedAgent === 'comida') {
-        // Usar webhook para el chat de comida
-        await sendToWebhook(inputText, 'https://n8n.vivefelizsindolor.com/webhook/ff3f992e-bf39-432a-9dad-05ce3ec14d26');
-      } else {
-        // Simular respuesta para otros agentes
-        setTimeout(() => {
-          const agentMessage: Message = {
-            id: (Date.now() + 1).toString(),
-            text: getAgentResponse(selectedAgent),
-            sender: 'agent',
-            timestamp: new Date(),
-            agentId: selectedAgent
-          };
-          setMessages(prev => [...prev, agentMessage]);
-          setIsTyping(false);
-        }, 1000);
-      }
-    } catch (error) {
-      console.error('Error al enviar mensaje:', error);
-      // Mensaje de error más específico
-      let errorMessage = 'Lo siento, hubo un error al procesar tu mensaje. Por favor intenta de nuevo.';
-
-      if (error instanceof Error) {
-        if (error.message.includes('Failed to fetch')) {
-          errorMessage = 'No puedo conectar con el servidor de salud. Por favor verifica tu conexión a internet.';
-        } else if (error.message.includes('Error HTTP')) {
-          errorMessage = 'El servidor de salud está experimentando problemas. Por favor intenta más tarde.';
-        }
-      }
-
-      const errorResponse: Message = {
-        id: (Date.now() + 1).toString(),
-        text: errorMessage,
-        sender: 'agent',
-        timestamp: new Date(),
-        agentId: selectedAgent
-      };
-      setMessages(prev => [...prev, errorResponse]);
-      setIsTyping(false);
-    }
-  };
-
-  const sendToWebhook = async (message: string, webhookUrl: string) => {
-    // Generar un conversationId único para esta sesión
+const sendToWebhook = async (message: string, webhookUrl: string) => {
     const conversationId = localStorage.getItem(`conversationId_${selectedAgent}`) ||
                           `bdc41d22-a72b-47cf-b1ad-6d6a1e8fe13d-${Date.now()}`;
 
@@ -143,10 +86,8 @@ export default function Chat({ selectedAgent }: ChatProps) {
       localStorage.setItem(`conversationId_${selectedAgent}`, conversationId);
     }
 
-    // Generar un messageId único para este mensaje
     const messageId = `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
-    // Usar la misma estructura que funcionaba para el chat de salud
     const payload = [{
       headers: {
         "host": "n8n.vivefelizsindolor.com",
@@ -156,9 +97,9 @@ export default function Chat({ selectedAgent }: ChatProps) {
         "accept-encoding": "gzip, deflate, br, zstd",
         "accept-language": "es-ES,es;q=0.9",
         "content-type": "application/json",
-        "origin": "http://localhost:3000",
+        "origin": "http://localhost:3002",
         "priority": "u=1, i",
-        "referer": "http://localhost:3000/",
+        "referer": "http://localhost:3002/",
         "sec-ch-ua": "\"Chromium\";v=\"140\", \"Not=A?Brand\";v=\"24\", \"Brave\";v=\"140\"",
         "sec-ch-ua-mobile": "?0",
         "sec-ch-ua-platform": "\"Windows\"",
@@ -184,8 +125,6 @@ export default function Chat({ selectedAgent }: ChatProps) {
       "executionMode": "production"
     }];
 
-    console.log('Enviando al webhook:', payload);
-
     const response = await fetch(webhookUrl, {
       method: 'POST',
       headers: {
@@ -194,23 +133,15 @@ export default function Chat({ selectedAgent }: ChatProps) {
       body: JSON.stringify(payload)
     });
 
-    console.log('Respuesta status:', response.status);
-
     if (!response.ok) {
       throw new Error(`Error HTTP: ${response.status}`);
     }
 
     const responseData = await response.json();
-    console.log('Respuesta del webhook:', responseData);
 
-    // Procesar la respuesta del webhook
     let responseText = '';
-
-    // Si es un array, tomar el primer elemento
     if (Array.isArray(responseData) && responseData.length > 0) {
       const webhookResponse = responseData[0];
-      console.log('Respuesta individual:', webhookResponse);
-
       responseText = webhookResponse.reply ||
                       webhookResponse.response?.message ||
                       webhookResponse.body?.response ||
@@ -218,10 +149,7 @@ export default function Chat({ selectedAgent }: ChatProps) {
                       webhookResponse.output ||
                       webhookResponse.message ||
                       '';
-    }
-    // Si es un objeto directo
-    else if (responseData && typeof responseData === 'object') {
-      console.log('Procesando como objeto directo');
+    } else if (responseData && typeof responseData === 'object') {
       responseText = responseData.reply ||
                       responseData.response?.message ||
                       responseData.response ||
@@ -231,8 +159,6 @@ export default function Chat({ selectedAgent }: ChatProps) {
                       responseData.message ||
                       '';
     }
-
-    console.log('Texto extraído:', responseText);
 
     const agentMessage: Message = {
       id: (Date.now() + 1).toString(),
@@ -246,7 +172,74 @@ export default function Chat({ selectedAgent }: ChatProps) {
     setIsTyping(false);
   };
 
-  
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && e.ctrlKey) {
+      e.preventDefault();
+      setInputText(prev => prev + '\n');
+    } else if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+    }
+  };
+
+  const handleSend = async () => {
+    if (!inputText.trim()) return;
+
+    const userMessage: Message = {
+      id: Date.now().toString(),
+      text: inputText,
+      sender: 'user',
+      timestamp: new Date(),
+      agentId: selectedAgent
+    };
+
+    setMessages(prev => [...prev, userMessage]);
+    setInputText('');
+    setIsTyping(true);
+
+    try {
+      if (selectedAgent === 'salud') {
+        await sendToWebhook(inputText, WEBHOOK_CONFIG.salud);
+      } else if (selectedAgent === 'comida') {
+        await sendToWebhook(inputText, WEBHOOK_CONFIG.comida);
+      } else {
+        // Simular respuesta para otros agentes
+        setTimeout(() => {
+          const agentMessage: Message = {
+            id: (Date.now() + 1).toString(),
+            text: getAgentResponse(selectedAgent),
+            sender: 'agent',
+            timestamp: new Date(),
+            agentId: selectedAgent
+          };
+          setMessages(prev => [...prev, agentMessage]);
+          setIsTyping(false);
+        }, 1000);
+      }
+    } catch (error) {
+      console.error('Error al enviar mensaje:', error);
+      let errorMessage = 'Lo siento, hubo un error al procesar tu mensaje. Por favor intenta de nuevo.';
+
+      if (error instanceof Error) {
+        if (error.message.includes('Failed to fetch')) {
+          errorMessage = 'No puedo conectar con el servidor. Por favor verifica tu conexión a internet.';
+        } else if (error.message.includes('Error HTTP')) {
+          errorMessage = 'El servidor está experimentando problemas. Por favor intenta más tarde.';
+        }
+      }
+
+      const errorResponse: Message = {
+        id: (Date.now() + 1).toString(),
+        text: errorMessage,
+        sender: 'agent',
+        timestamp: new Date(),
+        agentId: selectedAgent
+      };
+      setMessages(prev => [...prev, errorResponse]);
+      setIsTyping(false);
+    }
+  };
+
   // All messages are for the current agent (loaded from localStorage)
   const displayMessages = messages;
 
@@ -283,11 +276,14 @@ export default function Chat({ selectedAgent }: ChatProps) {
             <div
               className={`max-w-[80%] px-4 py-2 rounded-lg transition-all duration-200 hover:scale-[1.02] message-bubble ${
                 message.sender === 'user'
-                  ? 'bg-white/35 text-white hover:bg-white/45 hover:shadow-lg hover:shadow-blue-500/20'
-                  : 'bg-white/20 text-white/90 hover:bg-white/25 hover:shadow-lg'
+                  ? 'bg-white/35 text-white hover:bg-white/45'
+                  : 'bg-white/20 text-white/90 hover:bg-white/25'
               }`}
+              style={{
+                boxShadow: message.sender === 'user' ? `0 0 15px ${theme.primary}20` : '0 0 10px rgba(255,255,255,0.1)'
+              }}
             >
-              <div className="text-sm">{message.text}</div>
+              <div className="text-sm whitespace-pre-wrap">{formatMessageWithLineBreaks(message.text)}</div>
               <div className="text-xs text-white/40 mt-1">
                 {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </div>
@@ -297,7 +293,13 @@ export default function Chat({ selectedAgent }: ChatProps) {
 
         {isTyping && (
           <div className="flex justify-start animate-fade-in">
-            <div className="bg-white/25 text-white/90 px-4 py-2 rounded-lg typing-indicator">
+            <div
+              className="text-white/90 px-4 py-2 rounded-lg typing-indicator"
+              style={{
+                background: `${theme.primary}25`,
+                border: `1px solid ${theme.primary}33`
+              }}
+            >
               <div className="flex space-x-1">
                 <div className="w-2 h-2 bg-white/40 rounded-full animate-bounce"></div>
                 <div className="w-2 h-2 bg-white/40 rounded-full animate-bounce delay-100"></div>
@@ -316,14 +318,38 @@ export default function Chat({ selectedAgent }: ChatProps) {
           onChange={(e) => setInputText(e.target.value)}
           onKeyDown={handleKeyPress}
           placeholder="Escribe tu mensaje... (Ctrl+Enter para salto de línea)"
-          className="flex-1 bg-white/10 text-white placeholder-white/40 px-4 py-2 rounded-lg border border-white/20 focus:outline-none focus:border-blue-400/50 focus:bg-white/15 transition-all duration-200 hover:border-white/30 hover:bg-white/15 chat-input resize-none"
-          rows={1}
-          style={{ minHeight: '44px', maxHeight: '120px' }}
+          className="flex-1 bg-white/10 text-white placeholder-white/40 px-4 py-2 rounded-lg border border-white/20 focus:outline-none focus:bg-white/15 transition-all duration-200 hover:border-white/30 hover:bg-white/15 chat-input resize-none"
+          style={{
+            minHeight: '44px',
+            maxHeight: '120px',
+            borderColor: `${theme.primary}20`
+          }}
+          onFocus={(e) => {
+            e.target.style.borderColor = `${theme.primary}50`;
+          }}
+          onBlur={(e) => {
+            e.target.style.borderColor = `${theme.primary}20`;
+          }}
         />
         <button
           onClick={handleSend}
           disabled={!inputText.trim()}
-          className="bg-white/20 hover:bg-white/30 hover:shadow-lg hover:shadow-blue-500/20 text-white px-4 py-2 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105 disabled:hover:scale-100 send-button"
+          className="text-white px-4 py-2 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105 disabled:hover:scale-100 send-button"
+          style={{
+            background: `${theme.primary}30`,
+            border: `1px solid ${theme.primary}40`
+          }}
+          onMouseEnter={(e) => {
+            if (!inputText.trim()) return;
+            e.currentTarget.style.background = `${theme.primary}40`;
+            e.currentTarget.style.borderColor = `${theme.primary}60`;
+            e.currentTarget.style.boxShadow = `0 8px 25px ${theme.primary}33`;
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = `${theme.primary}30`;
+            e.currentTarget.style.borderColor = `${theme.primary}40`;
+            e.currentTarget.style.boxShadow = 'none';
+          }}
         >
           Enviar
         </button>
