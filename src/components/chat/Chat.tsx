@@ -87,6 +87,7 @@ const sendToWebhook = async (message: string, webhookUrl: string) => {
     }
 
     const messageId = `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const createdAt = new Date().toISOString();
 
     const payload = [{
       headers: {
@@ -119,7 +120,8 @@ const sendToWebhook = async (message: string, webhookUrl: string) => {
       body: {
         "conversationId": conversationId,
         "messageId": messageId,
-        "message": message
+        "message": message,
+        "createdAt": createdAt
       },
       "webhookUrl": webhookUrl,
       "executionMode": "production"
@@ -137,7 +139,15 @@ const sendToWebhook = async (message: string, webhookUrl: string) => {
       throw new Error(`Error HTTP: ${response.status}`);
     }
 
-    const responseData = await response.json();
+    let responseData;
+    try {
+      responseData = await response.json();
+    } catch (jsonError) {
+      console.error('Error parsing JSON response:', jsonError);
+      // Si la respuesta no es JSON, intentar obtener el texto
+      const textResponse = await response.text();
+      throw new Error(`Respuesta no válida del servidor: ${textResponse.slice(0, 100)}`);
+    }
 
     let responseText = '';
     if (Array.isArray(responseData) && responseData.length > 0) {

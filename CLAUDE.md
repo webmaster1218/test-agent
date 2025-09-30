@@ -10,14 +10,14 @@ This is a **Next.js-based chat application with AI agents** called "Fábrica de 
 
 ```bash
 # Development
-npm run dev                    # Start development server with Turbopack
+npm run dev                    # Start development server (Next.js with hot reload)
 
 # Build & Production
-npm run build                  # Create production build with Turbopack
+npm run build                  # Create production build
 npm run start                  # Start production server
 
 # Code Quality
-npm run lint                   # Run ESLint
+npm run lint                   # Run ESLint for code quality checks
 ```
 
 ## Architecture
@@ -25,24 +25,27 @@ npm run lint                   # Run ESLint
 ### Core Structure
 - **Next.js 15** with App Router
 - **React 19** with TypeScript
-- **Tailwind CSS 4** for styling
+- **Tailwind CSS 3** for styling
 - **OGL library** for WebGL graphics rendering
-- **Main directories**: `src/app/` (routes), `src/components/` (UI components)
+- **Main directories**: `src/app/` (routes), `src/components/` (UI components), `src/lib/` (config and utilities), `src/types/` (TypeScript types)
 
 ### Key Components
 1. **Main Application** (`src/app/page.tsx`): Spanish-language interface with agent selection and chat interface
-2. **Chat Component** (`src/components/Chat.tsx`): Real-time chat with localStorage persistence and webhook integration
-3. **Agent Selector** (`src/components/AgentSelector.tsx`): Interactive dropdown for switching between AI agents
-4. **Plasma Effects** (`src/components/Plasma.tsx`): WebGL-based background plasma effects with mouse interaction
+2. **Chat Component** (`src/components/chat/Chat.tsx`): Real-time chat with localStorage persistence and webhook integration
+3. **Agent Selector** (`src/components/ui/AgentSelector.tsx`): Interactive dropdown for switching between AI agents with capability tooltips
+4. **Plasma Effects** (`src/components/ui/Plasma.tsx`): WebGL-based background plasma effects with mouse interaction using OGL library
+5. **Theme System** (`src/lib/config/themes.ts`): Agent-specific color themes and visual styling
+6. **Constants** (`src/lib/config/constants.ts`): Application configuration and webhook URLs
 
 ### Technical Features
-- **Multi-Agent System**: Specialized AI assistants for different domains (Salud, Comida)
-- **Real-time Chat**: WebSocket-like experience with typing indicators
-- **Persistent Storage**: Messages saved to localStorage per agent
-- **Webhook Integration**: External n8n webhooks for AI agent processing
-- **Interactive Visual Effects**: Mouse-responsive WebGL plasma effects
-- **Responsive Design**: Mobile-first approach with Tailwind CSS
-- **Performance Optimized**: Uses Turbopack for fast builds and development
+- **Multi-Agent System**: Specialized AI assistants for different domains (Salud, Comida) with unique capabilities
+- **Real-time Chat**: WebSocket-like experience with typing indicators and message history
+- **Persistent Storage**: Messages and conversation IDs saved to localStorage per agent
+- **Webhook Integration**: External n8n webhooks for real AI agent processing with conversation tracking
+- **Interactive Visual Effects**: Mouse-responsive WebGL plasma effects using GLSL shaders
+- **Responsive Design**: Mobile-first approach with Tailwind CSS and custom animations
+- **Error Handling**: Comprehensive error handling for webhook failures and UI states
+- **Theme System**: Dynamic theming based on selected agent with smooth transitions
 
 ### External Integrations
 - **n8n Webhooks**:
@@ -67,33 +70,35 @@ npm run lint                   # Run ESLint
 ## Key Technical Details
 
 ### Chat System Architecture
-- **Message Persistence**: Messages stored in localStorage with agent-specific keys
-- **Conversation Management**: Unique conversation IDs per agent session
-- **Error Handling**: Comprehensive error handling for webhook failures
-- **Real-time Updates**: Immediate UI updates with smooth animations
-- **Message Processing**: Supports both webhook and local agent responses
+- **Message Persistence**: Messages stored in localStorage with agent-specific keys (`chat_messages_${agentId}`)
+- **Conversation Management**: Unique conversation IDs per agent session (`conversationId_${agentId}`)
+- **Webhook Integration**: Complex payload structure with headers mimicking browser requests
+- **Real-time Updates**: Immediate UI updates with smooth CSS animations and transitions
+- **Message Processing**: Supports both webhook responses and local fallback responses
+- **Error Recovery**: Graceful degradation with user-friendly error messages
 
 ### Agent Selection System
-- **Dynamic Agent Loading**: Agents defined in configuration array
-- **State Management**: Selected agent persisted to localStorage
-- **UI/UX Features**: Hover tooltips, smooth transitions, visual feedback
-- **Extensible Design**: Easy to add new agents with custom capabilities
+- **Agent Configuration**: Agents defined in `AgentSelector.tsx` with capabilities array
+- **State Management**: Selected agent persisted to localStorage with theme updates
+- **UI/UX Features**: Capability tooltips, hover states, smooth transitions, visual feedback
+- **Extensible Design**: Easy to add new agents with custom themes and capabilities
 
-### Plasma Effects
-- **WebGL Shaders**: Custom GLSL vertex and fragment shaders
-- **Interactive Controls**: Mouse position affects plasma movement
-- **Customizable Props**: Color, speed, direction, scale, opacity
-- **Performance**: Optimized with requestAnimationFrame and proper cleanup
-- **Responsive**: Handles window resizing and device pixel ratio
+### Plasma Effects System
+- **WebGL Implementation**: Uses OGL library with WebGL 2 for advanced shader effects
+- **GLSL Shaders**: Custom vertex and fragment shaders for plasma generation
+- **Interactive Controls**: Mouse position affects plasma movement via uniform variables
+- **Customizable Props**: Color, speed, direction, scale, opacity, mouse interaction
+- **Performance**: Optimized with requestAnimationFrame, ResizeObserver, and proper cleanup
+- **Responsive**: Handles window resizing and device pixel ratio automatically
 
 ## File Structure Patterns
 
-- Components follow PascalCase naming (`Chat.tsx`, `AgentSelector.tsx`)
-- Pages located in `src/app/` following App Router convention
-- TypeScript interfaces defined inline with components
-- CSS animations in separate `Plasma.css` file
-- Custom utility functions for hex-to-RGB conversion
-- Component-specific styles with Tailwind classes
+- **Components**: Follow PascalCase naming, organized by feature (`src/components/chat/`, `src/components/ui/`)
+- **Pages**: Located in `src/app/` following Next.js App Router convention
+- **Types**: Centralized in `src/types/index.ts` with TypeScript interfaces
+- **Configuration**: Separate config files in `src/lib/config/` for themes and constants
+- **Utilities**: Custom utility functions (hex-to-RGB conversion in Plasma component)
+- **Styling**: Component-specific styles with Tailwind classes and inline CSS variables for theming
 
 ## Important Notes
 
