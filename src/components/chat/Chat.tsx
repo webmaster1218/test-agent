@@ -25,6 +25,9 @@ export default function Chat({ selectedAgent, theme }: ChatProps) {
 
   // Load messages for current agent from localStorage
   useEffect(() => {
+    // Clear current messages first when agent changes
+    setMessages([]);
+
     const savedMessages = localStorage.getItem(`chat_messages_${selectedAgent}`);
     if (savedMessages) {
       try {
@@ -211,7 +214,20 @@ const sendToWebhook = async (message: string, webhookUrl: string) => {
       if (selectedAgent === 'salud') {
         await sendToWebhook(inputText, WEBHOOK_CONFIG.salud);
       } else if (selectedAgent === 'comida') {
-        await sendToWebhook(inputText, WEBHOOK_CONFIG.comida);
+        // Temporalmente desactivado - webhook no está activo en n8n
+        // Usar respuestas simuladas mientras se activa el webhook
+        setTimeout(() => {
+          const agentMessage: Message = {
+            id: (Date.now() + 1).toString(),
+            text: getAgentResponse(selectedAgent),
+            sender: 'agent',
+            timestamp: new Date(),
+            agentId: selectedAgent
+          };
+          setMessages(prev => [...prev, agentMessage]);
+          setIsTyping(false);
+        }, 1000);
+        return; // No ejecutar el bloque de error
       } else {
         // Simular respuesta para otros agentes
         setTimeout(() => {
@@ -250,8 +266,8 @@ const sendToWebhook = async (message: string, webhookUrl: string) => {
     }
   };
 
-  // All messages are for the current agent (loaded from localStorage)
-  const displayMessages = messages;
+  // Filter messages to show only those for the current agent
+  const displayMessages = messages.filter(msg => msg.agentId === selectedAgent);
 
   return (
     <div className="flex flex-col max-w-xl w-full mx-auto" style={{ maxHeight: '600px' }}>
