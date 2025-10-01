@@ -46,7 +46,7 @@ function parseJsonFromText(text: string): { text: string, images: Array<{url: st
       // Extraer imágenes si existen
       if (parsed.images && Array.isArray(parsed.images)) {
         images.push(...parsed.images.map((img: { url?: string; imageUrl?: string; alt?: string; imageAlt?: string }) => ({
-          url: img.url || img.imageUrl || img,
+          url: (img.url || img.imageUrl || (typeof img === 'string' ? img : '')) as string,
           alt: img.alt || img.imageAlt || 'Imagen del agente'
         })));
       }
@@ -259,7 +259,7 @@ const sendToWebhook = async (message: string, webhookUrl: string) => {
 
         if (imagesData && Array.isArray(imagesData)) {
           images = imagesData.map((img: { url?: string; imageUrl?: string; alt?: string; imageAlt?: string }) => ({
-            url: img.url || img.imageUrl || img,
+            url: (img.url || img.imageUrl || (typeof img === 'string' ? img : '')) as string,
             alt: img.alt || img.imageAlt || 'Imagen enviada por el agente'
           }));
         } else if (singleImageUrl) {
@@ -302,7 +302,7 @@ const sendToWebhook = async (message: string, webhookUrl: string) => {
 
         if (imagesData && Array.isArray(imagesData)) {
           images = imagesData.map((img: { url?: string; imageUrl?: string; alt?: string; imageAlt?: string }) => ({
-            url: img.url || img.imageUrl || img,
+            url: (img.url || img.imageUrl || (typeof img === 'string' ? img : '')) as string,
             alt: img.alt || img.imageAlt || 'Imagen enviada por el agente'
           }));
         } else if (singleImageUrl) {

@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { Message } from '@/types';
-import { AgentTheme } from '@/lib/config/themes';
 import { WEBHOOK_CONFIG } from '@/lib/config/constants';
 
 export function useChat(selectedAgent: string) {
