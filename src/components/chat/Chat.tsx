@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import Image from 'next/image';
 import { AgentTheme } from '@/lib/config/themes';
 import { WEBHOOK_CONFIG } from '@/lib/config/constants';
 
@@ -44,7 +45,7 @@ function parseJsonFromText(text: string): { text: string, images: Array<{url: st
 
       // Extraer imágenes si existen
       if (parsed.images && Array.isArray(parsed.images)) {
-        images.push(...parsed.images.map((img: any) => ({
+        images.push(...parsed.images.map((img: { url?: string; imageUrl?: string; alt?: string; imageAlt?: string }) => ({
           url: img.url || img.imageUrl || img,
           alt: img.alt || img.imageAlt || 'Imagen del agente'
         })));
@@ -231,7 +232,7 @@ const sendToWebhook = async (message: string, webhookUrl: string) => {
 
     if (Array.isArray(responseData) && responseData.length > 0) {
       const webhookResponse = responseData[0];
-      let rawResponseText = webhookResponse.reply ||
+      const rawResponseText = webhookResponse.reply ||
                            webhookResponse.response?.message ||
                            webhookResponse.body?.response ||
                            webhookResponse.body?.message ||
@@ -257,7 +258,7 @@ const sendToWebhook = async (message: string, webhookUrl: string) => {
                              '';
 
         if (imagesData && Array.isArray(imagesData)) {
-          images = imagesData.map((img: any) => ({
+          images = imagesData.map((img: { url?: string; imageUrl?: string; alt?: string; imageAlt?: string }) => ({
             url: img.url || img.imageUrl || img,
             alt: img.alt || img.imageAlt || 'Imagen enviada por el agente'
           }));
@@ -273,7 +274,7 @@ const sendToWebhook = async (message: string, webhookUrl: string) => {
       }
 
     } else if (responseData && typeof responseData === 'object') {
-      let rawResponseText = responseData.reply ||
+      const rawResponseText = responseData.reply ||
                            responseData.response?.message ||
                            responseData.response ||
                            responseData.body?.response ||
@@ -300,7 +301,7 @@ const sendToWebhook = async (message: string, webhookUrl: string) => {
                              '';
 
         if (imagesData && Array.isArray(imagesData)) {
-          images = imagesData.map((img: any) => ({
+          images = imagesData.map((img: { url?: string; imageUrl?: string; alt?: string; imageAlt?: string }) => ({
             url: img.url || img.imageUrl || img,
             alt: img.alt || img.imageAlt || 'Imagen enviada por el agente'
           }));
@@ -456,9 +457,11 @@ const sendToWebhook = async (message: string, webhookUrl: string) => {
                         }}
                         onClick={() => window.open(image.url, '_blank')}
                       >
-                        <img
+                        <Image
                           src={getGoogleDriveDirectUrl(image.url)}
                           alt={image.alt || `Imagen ${index + 1} del agente`}
+                          width={320}
+                          height={600}
                           className="w-full h-auto object-contain rounded-lg"
                           style={{
                             width: '100%',
