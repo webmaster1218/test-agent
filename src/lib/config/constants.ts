@@ -7,6 +7,6 @@ export const APP_CONFIG = {
 } as const;
 
 export const WEBHOOK_CONFIG = {
-  salud: 'https://n8n.vivefelizsindolor.com/webhook/d25d94ff-e996-4044-88e9-9a108118f0f4',
+  salud: 'https://n8n.srv1054162.hstgr.cloud/webhook/564531df-e16b-40e4-8e1c-522aa0529631',
   comida: 'https://n8n.vivefelizsindolor.com/webhook/ff3f992e-bf39-432a-9dad-05ce3ec14d26',
 } as const;

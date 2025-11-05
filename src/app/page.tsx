@@ -1,10 +1,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import Plasma from '@/components/ui/Plasma';
 import Chat from '@/components/chat/Chat';
 import AgentSelector from '@/components/ui/AgentSelector';
+import { Button } from '@/components/ui/button';
 import { getAgentTheme } from '@/lib/config/themes';
+import { BarChart3, Sparkles, TrendingUp } from 'lucide-react';
 
 export default function Home() {
   const [selectedAgent, setSelectedAgent] = useState('salud');
@@ -54,13 +57,30 @@ export default function Home() {
           </div>
         </header>
 
-        <div className="px-4 mb-6">
+        <div className="px-4 mb-6 space-y-4">
           <div className="w-full max-w-md mx-auto">
             <AgentSelector
               selectedAgent={selectedAgent}
               onAgentChange={handleAgentChange}
               theme={theme}
             />
+          </div>
+
+          {/* Dashboard Access Button */}
+          <div className="w-full max-w-md mx-auto">
+            <Link href={selectedAgent === 'comida' ? '/login/comida' : '/login/salud'} passHref>
+              <Button
+                size="default"
+                className="w-full group relative overflow-hidden bg-white/10 hover:bg-white/20 text-white border border-white/30 backdrop-blur-sm transition-all duration-300 hover:scale-105"
+              >
+                <div className="flex items-center justify-center gap-2">
+                  <BarChart3 className="h-4 w-4" />
+                  <span className="font-medium">Acceder a Dashboard</span>
+                  <Sparkles className="h-4 w-4 opacity-80 group-hover:opacity-100 transition-opacity" />
+                </div>
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-500" />
+              </Button>
+            </Link>
           </div>
         </div>
 

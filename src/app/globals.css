@@ -4,22 +4,99 @@
 
 @import '../components/ui/Plasma.css';
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* Hide scrollbar for Chrome, Safari and Opera */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
 }
 
-@media (prefers-color-scheme: dark) {
+/* Hide scrollbar for IE, Edge and Firefox */
+.hide-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+/* Hide scrollbar for entire page */
+html, body {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;  /* Chrome, Safari and Opera */
+}
+
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 177 35% 38%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 0 0% 0%;
+    --foreground: 0 0% 95%;
+    --card: 0 0% 5%;
+    --card-foreground: 0 0% 95%;
+    --popover: 0 0% 5%;
+    --popover-foreground: 0 0% 95%;
+    --primary: 177 35% 38%;
+    --primary-foreground: 0 0% 95%;
+    --secondary: 0 0% 10%;
+    --secondary-foreground: 0 0% 95%;
+    --muted: 0 0% 10%;
+    --muted-foreground: 0 0% 65%;
+    --accent: 175 40% 15%;
+    --accent-foreground: 0 0% 95%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 95%;
+    --border: 0 0% 15%;
+    --input: 0 0% 15%;
+    --ring: 175 60% 42%;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Variables personalizadas para el color de la marca */
+:root {
+  --brand-primary: 175 60% 42%;
+  --brand-primary-rgb: 44 128 130;
+  --brand-light: 175 50% 85%;
+  --brand-dark: 175 60% 25%;
+}
+
+.dark {
+  --brand-primary: 175 60% 42%;
+  --brand-primary-rgb: 44 128 130;
+  --brand-light: 175 60% 60%;
+  --brand-dark: 175 60% 30%;
+  --brand-background: 0 0% 3%;
+  --brand-surface: 0 0% 8%;
 }
 
 /* Animación para tooltip */
@@ -56,3 +133,332 @@ body {
 .chat-scroll::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.5);
 }
+
+/* Estilos específicos para tema dark con acentos #2C8082 */
+.dark {
+  /* Acentos de marca más brillantes en tema dark */
+  --brand-accent: hsl(175, 60%, 50%);
+  --brand-accent-hover: hsl(175, 60%, 60%);
+  --brand-border: hsl(175, 60%, 35%);
+}
+
+.dark .bg-gradient-to-r {
+  /* Mejorar gradientes con color de marca */
+  background-image: linear-gradient(to right,
+    hsl(175, 60%, 42%) 0%,
+    hsl(175, 60%, 25%) 100%
+  );
+}
+
+.dark .border-\[\#2C8082\/20\] {
+  border-color: hsl(175, 60%, 30%);
+}
+
+.dark .border-\[\#2C8082\/30\] {
+  border-color: hsl(175, 60%, 40%);
+}
+
+.dark .hover\:border-\[\#2C8082\/50\]:hover {
+  border-color: hsl(175, 60%, 55%);
+}
+
+.dark .text-\[\#2C8082\] {
+  color: hsl(175, 60%, 50%);
+}
+
+.dark .bg-\[\#2C8082\/5\] {
+  background-color: hsl(175, 60%, 10%);
+}
+
+.dark .bg-\[\#2C8082\/10\] {
+  background-color: hsl(175, 60%, 15%);
+}
+
+.dark .bg-\[\#2C8082\/20\] {
+  background-color: hsl(175, 60%, 25%);
+}
+
+
+/* Mejorar estilos de headers en tema dark */
+.dark .bg-gray-900\/50 {
+  background-color: hsl(0, 0%, 5%);
+}
+
+.dark .border-gray-800 {
+  border-color: hsl(0, 0%, 25%);
+}
+
+.dark .bg-gray-700 {
+  background-color: hsl(0, 0%, 45%);
+}
+
+/* Títulos de headers en tema dark */
+.dark .text-white {
+  color: hsl(0, 0%, 95%);
+}
+
+/* Estilos personalizados para scrollbar con estilo shadcn - Versión mejorada */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--primary)) transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: hsl(var(--muted) / 0.3);
+  border-radius: 4px;
+  margin: 4px 0;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: hsl(var(--primary) / 0.6);
+  border-radius: 4px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+  transition: all 0.2s ease;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: hsl(var(--primary) / 0.8);
+  background-clip: content-box;
+}
+
+.custom-scrollbar::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Scrollbar específico para tema dark */
+.dark .custom-scrollbar::-webkit-scrollbar-track {
+  background: hsl(var(--muted) / 0.2);
+}
+
+.dark .custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: hsl(var(--primary) / 0.5);
+}
+
+.dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: hsl(var(--primary) / 0.7);
+}
+
+/* Variables CSS para tema de agente de comida - Color naranja #FF6B35 */
+:root {
+  --comida-primary: 16 85% 55%;    /* #FF6B35 en HSL */
+  --comida-primary-rgb: 255 107 53;
+  --comida-primary-light: 16 85% 70%;  /* Más claro */
+  --comida-primary-dark: 16 85% 45%;   /* Más oscuro */
+}
+
+/* Aplicar tema de comida cuando se esté en rutas de comida */
+[data-theme="comida"] {
+  --primary: 16 85% 55%;  /* #FF6B35 - Naranja forzado */
+  --primary-foreground: 0 0% 95%;
+  --ring: 16 85% 55%;     /* #FF6B35 - Naranja forzado */
+  --chart-1: 16 85% 55%;  /* #FF6B35 - Naranja forzado */
+}
+
+/* Estilos específicos para el tema de comida */
+[data-theme="comida"] .bg-primary {
+  background-color: hsl(16 85% 55%);  /* #FF6B35 - Naranja forzado */
+}
+
+[data-theme="comida"] .bg-primary\/10 {
+  background-color: hsl(16 85% 55% / 0.1);  /* Naranja forzado */
+}
+
+[data-theme="comida"] .text-primary {
+  color: hsl(16 85% 55%);  /* #FF6B35 - Naranja forzado */
+}
+
+[data-theme="comida"] .text-primary\/foreground {
+  color: hsl(0 0% 95%);  /* Blanco */
+}
+
+[data-theme="comida"] .border-primary {
+  border-color: hsl(16 85% 55%);  /* #FF6B35 - Naranja forzado */
+}
+
+[data-theme="comida"] .border-primary\/20 {
+  border-color: hsl(16 85% 55% / 0.2);  /* Naranja forzado */
+}
+
+[data-theme="comida"] .ring-primary {
+  --tw-ring-color: hsl(16 85% 55%);  /* #FF6B35 - Naranja forzado */
+}
+
+/* Gradientes específicos para tema de comida */
+[data-theme="comida"] .bg-gradient-to-r.from-primary {
+  background-image: linear-gradient(to right, hsl(16 85% 55%), var(--tw-gradient-to));  /* Naranja forzado */
+}
+
+[data-theme="comida"] .bg-gradient-to-r.from-primary\/10 {
+  background-image: linear-gradient(to right, hsl(16 85% 55% / 0.1), var(--tw-gradient-to));  /* Naranja forzado */
+}
+
+[data-theme="comida"] .bg-gradient-to-br.from-primary\/10 {
+  background-image: linear-gradient(to bottom right, hsl(16 85% 55% / 0.1), var(--tw-gradient-to));  /* Naranja forzado */
+}
+
+/* Para gráficos y componentes que usan --primary directamente */
+[data-theme="comida"] [style*="--primary"] {
+  --primary: var(--comida-primary) !important;
+}
+
+/* Forzar colores de texto para badges y botones en tema comida */
+[data-theme="comida"] .text-primary {
+  color: hsl(16 85% 55%) !important;  /* #FF6B35 - Naranja forzado */
+}
+
+[data-theme="comida"] .badge.text-primary {
+  color: hsl(16 85% 55%) !important;  /* #FF6B35 - Naranja forzado */
+}
+
+/* Asegurar que el Badge "Activo" sea naranja en tema comida */
+[data-theme="comida"] .badge[class*="text-primary"] {
+  color: hsl(16 85% 55%) !important;
+  border-color: hsl(16 85% 55% / 0.2) !important;
+}
+
+[data-theme="comida"] .badge[class*="bg-primary/10"] {
+  background-color: hsl(16 85% 55% / 0.1) !important;
+}
+
+/* Scrollbar personalizado para tema de comida */
+[data-theme="comida"] .custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(16 85% 55%) transparent;
+}
+
+[data-theme="comida"] .custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+
+[data-theme="comida"] .custom-scrollbar::-webkit-scrollbar-track {
+  background: hsl(var(--muted) / 0.3);
+  border-radius: 4px;
+}
+
+[data-theme="comida"] .custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: hsl(16 85% 55% / 0.6);
+  background-clip: content-box;
+  border-radius: 4px;
+  border: 2px solid transparent;
+}
+
+[data-theme="comida"] .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: hsl(16 85% 55% / 0.8);
+  background-clip: content-box;
+}
+
+[data-theme="comida"] .custom-scrollbar::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Forzar scrollbar naranja en tema de comida - MÁS ESPECÍFICO CON HTML */
+html[data-theme="comida"] *::-webkit-scrollbar {
+  width: 8px;
+}
+
+html[data-theme="comida"] *::-webkit-scrollbar-track {
+  background: hsl(var(--muted) / 0.3);
+  border-radius: 4px;
+}
+
+html[data-theme="comida"] *::-webkit-scrollbar-thumb {
+  background-color: hsl(16 85% 55% / 0.6) !important;
+  background-clip: content-box;
+  border-radius: 4px;
+  border: 2px solid transparent;
+}
+
+html[data-theme="comida"] *::-webkit-scrollbar-thumb:hover {
+  background-color: hsl(16 85% 55% / 0.8) !important;
+  background-clip: content-box;
+}
+
+/* Scrollbar en tema dark para comida - MÁS ESPECÍFICO */
+html.dark[data-theme="comida"] *::-webkit-scrollbar-thumb {
+  background-color: hsl(16 85% 55% / 0.7) !important;
+}
+
+html.dark[data-theme="comida"] *::-webkit-scrollbar-thumb:hover {
+  background-color: hsl(16 85% 55% / 0.9) !important;
+}
+
+/* Forzar scrollbar en componentes específicos */
+html[data-theme="comida"] .scroll-area *::-webkit-scrollbar-thumb {
+  background-color: hsl(16 85% 55% / 0.6) !important;
+}
+
+html.dark[data-theme="comida"] .scroll-area *::-webkit-scrollbar-thumb {
+  background-color: hsl(16 85% 55% / 0.7) !important;
+}
+
+/* Scrollbar con máxima especificidad para chat de comida */
+html.dark[data-theme="comida"] [data-radix-scroll-area-viewport]::-webkit-scrollbar-thumb,
+html[data-theme="comida"] [data-radix-scroll-area-viewport]::-webkit-scrollbar-thumb {
+  background: hsl(16 85% 55% / 0.6) !important;
+  background-color: hsl(16 85% 55% / 0.6) !important;
+}
+
+html.dark[data-theme="comida"] [data-radix-scroll-area-viewport]::-webkit-scrollbar-thumb:hover,
+html[data-theme="comida"] [data-radix-scroll-area-viewport]::-webkit-scrollbar-thumb:hover {
+  background: hsl(16 85% 55% / 0.8) !important;
+  background-color: hsl(16 85% 55% / 0.8) !important;
+}
+
+/* Scrollbar con color hexadecimal directo para máxima fuerza */
+html.dark[data-theme="comida"] *::-webkit-scrollbar-thumb {
+  background: #FF6B35 !important;
+  background-color: #FF6B35 !important;
+}
+
+html[data-theme="comida"] *::-webkit-scrollbar-thumb {
+  background: #FF6B35 !important;
+  background-color: #FF6B35 !important;
+}
+
+/* Scrollbar específico para el componente de chat */
+html.dark[data-theme="comida"] .chat-scroll::-webkit-scrollbar-thumb,
+html[data-theme="comida"] .chat-scroll::-webkit-scrollbar-thumb {
+  background: #FF6B35 !important;
+  background-color: #FF6B35 !important;
+}
+
+/* Botón de enviar naranja en tema dark para comida - MÁS ESPECÍFICO */
+.dark[data-theme="comida"] button[type="submit"].rounded-full.shrink-0 {
+  background-image: linear-gradient(to right, hsl(16 85% 55%), hsl(16 85% 55% / 0.8)) !important;
+  background-color: hsl(16 85% 55%) !important;
+}
+
+.dark[data-theme="comida"] button[class*="from-orange-500"] {
+  background-image: linear-gradient(to right, hsl(16 85% 55%), hsl(16 85% 55% / 0.8)) !important;
+}
+
+.dark[data-theme="comida"] button[class*="bg-gradient-to-r"] {
+  background-image: linear-gradient(to right, hsl(16 85% 55%), hsl(16 85% 55% / 0.8)) !important;
+}
+
+/* Forzar cualquier botón que tenga gradiente naranja */
+html.dark[data-theme="comida"] button.bg-gradient-to-r.from-orange-500.to-orange-500\/80 {
+  background-image: linear-gradient(to right, #FF6B35, rgba(255, 107, 53, 0.8)) !important;
+}
+
+/* Estilos para eliminar fondo de tooltips en gráficos Recharts */
+.recharts-tooltip-wrapper {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+.recharts-default-tooltip {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+}
+
