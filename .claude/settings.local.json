@@ -43,7 +43,9 @@
       "WebFetch(domain:ui.shadcn.com)",
       "Bash(sed:*)",
       "Bash(cp:*)",
-      "mcp__shadcn__get_add_command_for_items"
+      "mcp__shadcn__get_add_command_for_items",
+      "Bash(git config:*)",
+      "Bash(git remote set-url:*)"
     ],
     "deny": [],
     "ask": []
