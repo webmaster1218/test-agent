@@ -28,6 +28,7 @@ npm run typecheck              # TypeScript type checking
 - Image optimization is configured for Google Drive and n8n domains
 - Security headers are configured for production deployment
 - All components use TypeScript with strict type checking
+- **Vercel Environment Variables Required**: For deployment, configure NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in Vercel dashboard
 
 ## Authentication & Access
 

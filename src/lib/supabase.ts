@@ -1,9 +1,16 @@
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+// Verificar si las variables de entorno están disponibles
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+// Solo crear el cliente si las variables están disponibles
+export const supabase = supabaseUrl && supabaseAnonKey
+  ? createClient(supabaseUrl, supabaseAnonKey)
+  : null;
+
+// Variable para verificar si Supabase está disponible
+export const isSupabaseAvailable = !!(supabaseUrl && supabaseAnonKey)
 
 // Tipos para la configuración
 export interface ConfiguracionAgente {
@@ -46,6 +53,12 @@ export interface ConfiguracionRow {
 
 // Funciones para interactuar con Supabase
 export async function getConfiguracionAgente(tipoAgente: string): Promise<ConfiguracionAgente | null> {
+  // Si Supabase no está disponible, retornar null
+  if (!isSupabaseAvailable || !supabase) {
+    console.log('Supabase no está disponible - usando configuración por defecto')
+    return null
+  }
+
   try {
     console.log('Cargando configuración para:', tipoAgente)
     console.log('URL Supabase:', process.env.NEXT_PUBLIC_SUPABASE_URL)
@@ -82,6 +95,12 @@ export async function getConfiguracionAgente(tipoAgente: string): Promise<Config
 }
 
 export async function saveConfiguracionAgente(tipoAgente: string, configuracion: ConfiguracionAgente): Promise<boolean> {
+  // Si Supabase no está disponible, retornar false
+  if (!isSupabaseAvailable || !supabase) {
+    console.log('Supabase no está disponible - no se puede guardar configuración')
+    return false
+  }
+
   try {
     console.log('=== INICIANDO GUARDADO EN SUPABASE ===')
     console.log('1. Tipo de agente:', tipoAgente)
