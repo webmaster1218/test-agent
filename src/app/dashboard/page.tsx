@@ -35,14 +35,16 @@ const N8N_WEBHOOK_URL = 'https://n8n.vivefelizsindolor.com/webhook/dda6a613-7df4
 
 // Raw data from conversations table
 interface SheetRow {
-    row_number: number;
-    ['conversation_id ']: string;
-    ['start_time ']: string;
+    row_number: string;
+    conversation_id: string;
+    start_time: string;
     end_time: string;
-    main_intent: string;
+    sentimiento?: string;
     user_message: string;
     agent_message: string;
-    sentimiento?: string;
+    id: number;
+    createdAt: string;
+    updatedAt: string;
 }
 
 // Raw data from appointments/valoraciones table
@@ -612,15 +614,15 @@ const renderActiveShape = (props: any) => {
 
 const calculateSummaryMetrics = async (sheetData: any[], appointmentsData: any[]) => {
     // Extract unique conversation IDs
-    const conversationIds = new Set(sheetData.map(row => row['conversation_id ']));
+    const conversationIds = new Set(sheetData.map(row => row.conversation_id));
     const totalConversations = conversationIds.size;
     const totalMessages = sheetData.length;
 
     // Calculate average response time per message (bot response speed)
     const responseTimes = sheetData
-      .filter(row => row['start_time '] && row.end_time && row.user_message && row.agent_message)
+      .filter(row => row.start_time && row.end_time && row.user_message && row.agent_message)
       .map(row => {
-        const startTime = new Date(row['start_time ']).getTime();
+        const startTime = new Date(row.start_time).getTime();
         const endTime = new Date(row.end_time).getTime();
         return (endTime - startTime) / 1000; // Convert to seconds
       })
@@ -641,8 +643,8 @@ const calculateSummaryMetrics = async (sheetData: any[], appointmentsData: any[]
     const conversationDurations = new Map<string, { startTime: number; endTime: number }>();
 
     sheetData.forEach(row => {
-      const convId = row['conversation_id '];
-      const startTime = row['start_time '] ? new Date(row['start_time ']).getTime() : null;
+      const convId = row.conversation_id;
+      const startTime = row.start_time ? new Date(row.start_time).getTime() : null;
       const endTime = row.end_time ? new Date(row.end_time).getTime() : null;
 
       if (convId && startTime && endTime) {
@@ -765,7 +767,7 @@ const processSheetData = async (webhookData: WebhookResponse): Promise<Dashboard
     const recentAppointments = normalizedAppointments
         .sort((a, b) => new Date(b['Fecha de inicio'] || 0).getTime() - new Date(a['Fecha de inicio'] || 0).getTime())
         .slice(0, 10);
-    const conversationIds = new Set(sheetData.map(row => row['conversation_id ']));
+    const conversationIds = new Set(sheetData.map(row => row.conversation_id));
     const totalConversations = conversationIds.size;
     const totalMessages = sheetData.length;
 
@@ -781,7 +783,7 @@ const processSheetData = async (webhookData: WebhookResponse): Promise<Dashboard
 
     let totalInteractionSeconds = 0;
     sheetData.forEach(row => {
-        const start = parseDate(row['start_time ']);
+        const start = parseDate(row.start_time);
         const end = parseDate(row.end_time);
         if (start && end) {
             totalInteractionSeconds += Math.abs(differenceInSeconds(end, start));
@@ -790,9 +792,9 @@ const processSheetData = async (webhookData: WebhookResponse): Promise<Dashboard
 
     // Calculate average response time per message (bot response speed)
     const responseTimes = sheetData
-      .filter(row => row['start_time '] && row.end_time && row.user_message && row.agent_message)
+      .filter(row => row.start_time && row.end_time && row.user_message && row.agent_message)
       .map(row => {
-        const startTime = new Date(row['start_time ']).getTime();
+        const startTime = new Date(row.start_time).getTime();
         const endTime = new Date(row.end_time).getTime();
         return (endTime - startTime) / 1000; // Convert to seconds
       })
@@ -813,8 +815,8 @@ const processSheetData = async (webhookData: WebhookResponse): Promise<Dashboard
     const conversationDurations = new Map<string, { startTime: number; endTime: number }>();
 
     sheetData.forEach(row => {
-      const convId = row['conversation_id '];
-      const startTime = row['start_time '] ? new Date(row['start_time ']).getTime() : null;
+      const convId = row.conversation_id;
+      const startTime = row.start_time ? new Date(row.start_time).getTime() : null;
       const endTime = row.end_time ? new Date(row.end_time).getTime() : null;
 
       if (convId && startTime && endTime) {
@@ -851,18 +853,18 @@ const processSheetData = async (webhookData: WebhookResponse): Promise<Dashboard
     const historicalDataMap = new Map<string, { dateObj: Date, conversations: Set<string>; messages: number; intents: Record<string, number> }>();
 
     sheetData.forEach(row => {
-        const startDate = parseDate(row['start_time ']);
+        const startDate = parseDate(row.start_time);
         if (startDate) {
             const dateStr = format(startDate, 'MMM d', { locale: es });
             const entry = historicalDataMap.get(dateStr) || { dateObj: startDate, conversations: new Set(), messages: 0, intents: {} };
 
             entry.messages += 1;
-            const convId = row['conversation_id '];
+            const convId = row.conversation_id;
             if (convId) {
                 entry.conversations.add(convId);
             }
 
-            const intent = row.main_intent || 'SIN_INTENCION';
+            const intent = 'SIN_INTENCION'; // main_intent ya no viene en los datos
             entry.intents[intent] = (entry.intents[intent] || 0) + 1;
 
             historicalDataMap.set(dateStr, entry);
@@ -900,7 +902,7 @@ const processSheetData = async (webhookData: WebhookResponse): Promise<Dashboard
         value: 0,
     }));
     sheetData.forEach(row => {
-        const startDate = parseDate(row['start_time ']);
+        const startDate = parseDate(row.start_time);
         if (startDate) {
             const hour = startDate.getHours();
             hourlyActivityMap[hour].value += 1;
@@ -916,7 +918,7 @@ const processSheetData = async (webhookData: WebhookResponse): Promise<Dashboard
     ];
 
     const allIntentsCounts = sheetData.reduce((acc, row) => {
-        const intent = row.main_intent || 'SIN_INTENCION';
+        const intent = 'SIN_INTENCION'; // main_intent ya no viene en los datos
         if (MAIN_INTENTS.includes(intent)) {
             acc[intent] = (acc[intent] || 0) + 1;
         }
@@ -930,9 +932,9 @@ const processSheetData = async (webhookData: WebhookResponse): Promise<Dashboard
     const intentFlowCounts: Record<string, number> = {};
     conversationIds.forEach(convId => {
         const flow = sheetData
-            .filter(row => row['conversation_id '] === convId)
-            .sort((a, b) => (parseDate(a['start_time '])?.getTime() || 0) - (parseDate(b['start_time '])?.getTime() || 0))
-            .map(row => row.main_intent || 'SIN_INTENCION')
+            .filter(row => row.conversation_id === convId)
+            .sort((a, b) => (parseDate(a.start_time)?.getTime() || 0) - (parseDate(b.start_time)?.getTime() || 0))
+            .map(row => 'SIN_INTENCION') // main_intent ya no viene en los datos
             .filter(intent => intent !== 'SIN_INTENCION' && intent !== 'SALUDO')
             .slice(0, 3);
 
@@ -1202,7 +1204,7 @@ export default function DashboardPage() {
 
       // Filter original data based on the date range
       const filteredConversations = originalSheetData.filter(row => {
-        const startDate = parseDate(row['start_time ']);
+        const startDate = parseDate(row.start_time);
         return startDate && date?.from && date?.to && isWithinInterval(startDate, { start: date.from!, end: date.to! });
       });
 
@@ -1218,8 +1220,8 @@ export default function DashboardPage() {
       // Calculate filtered hourly activity data
       const hourlyMap = new Map<number, number>();
       filteredConversations.forEach(row => {
-        if (row['start_time ']) {
-          const startDate = parseDate(row['start_time ']);
+        if (row.start_time) {
+          const startDate = parseDate(row.start_time);
           if (startDate) {
             const hour = startDate.getHours();
             hourlyMap.set(hour, (hourlyMap.get(hour) || 0) + 1);
@@ -1631,7 +1633,7 @@ export default function DashboardPage() {
   return (
     <AuthGuard dashboardType="salud">
       <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-6 w-full">
+      <div className="container mx-auto px-4 py-6 pt-[35px] sm:pt-6 w-full">
         {/* Header */}
         <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
           <div>
@@ -1640,7 +1642,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Controles */}
-          <div className="flex flex-col sm:flex-row gap-2">
+          <div className="flex flex-row gap-2 sm:flex-row">
             <Button
               onClick={loadData}
               disabled={isLoading}
@@ -1829,7 +1831,7 @@ export default function DashboardPage() {
         </header>
 
         {/* Métricas Principales */}
-        <div className="grid grid-cols-2 md:grid-cols-7 gap-4 mb-6">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 gap-4 mb-6">
           <Card className="p-4">
             <div className="flex items-center space-x-2">
               <div className="p-2 rounded-md bg-primary/10">
@@ -1916,7 +1918,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Gráficas */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
           {/* Volumen Diario */}
           <Card className="p-3">
             <div className="flex items-center justify-between mb-2">
@@ -2050,9 +2052,9 @@ export default function DashboardPage() {
         </div>
 
         {/* Layout 75/25: Flujo de Actividad + Chat */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-6">
           {/* Gráfica de Flujo de Actividad (75%) */}
-          <div className="md:col-span-3">
+          <div className="lg:col-span-3">
             <Card className="p-3 pt-3 pb-1 h-full flex flex-col">
               <div className="flex items-center justify-between mb-2">
                 <div>

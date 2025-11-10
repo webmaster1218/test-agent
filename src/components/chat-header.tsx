@@ -1,22 +1,33 @@
-import { RotateCcw } from 'lucide-react';
+import { RotateCcw, Bot } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { usePathname } from 'next/navigation';
+import { getAgentTheme } from '@/lib/config/themes';
 
 interface ChatHeaderProps {
   onReset: () => void;
 }
 
 export default function ChatHeader({ onReset }: ChatHeaderProps) {
+  const pathname = usePathname();
+  const isComidaRoute = pathname.includes('/comida');
+  const agentType = isComidaRoute ? 'comida' : 'salud';
+  const agentTheme = getAgentTheme(agentType);
+
   return (
     <header className="bg-background/95 backdrop-blur-md p-4 flex items-center justify-between border-b border-border/50 shadow-sm">
-      <div className="flex flex-col">
+      <div className="flex items-center gap-3">
         <div className="flex items-center gap-2">
-          <h1 className="text-lg font-semibold tracking-tight">MARCOS</h1>
-          <Badge variant="secondary" className="text-xs px-2 py-0.5 bg-orange-500/10 text-orange-500 border-orange-500/20">
-            Activo
-          </Badge>
+          <Bot
+            className="h-5 w-5"
+            style={{ color: agentTheme.primary }}
+          />
+          <h1 className="text-lg font-semibold tracking-tight text-foreground">
+            Conversación Activa
+          </h1>
         </div>
-        <p className="text-xs text-muted-foreground font-medium">Asistente Virtual</p>
+        <span className="text-sm text-muted-foreground">
+          Chatea con el asistente de {agentType === 'salud' ? 'salud' : 'comida'}
+        </span>
       </div>
       <Button
         variant="ghost"

@@ -6,9 +6,10 @@ import AppContent from '@/components/app-content';
 export default function ConditionalAppContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
-  // Solo mostrar el menú de navegación en las páginas del dashboard (incluyendo las de comida)
+  // Solo mostrar el menú de navegación en las páginas del dashboard (incluyendo las de comida y salud)
   const isDashboardPage = pathname === '/dashboard' || pathname === '/chat' || pathname === '/settings' ||
-                         pathname === '/dashboard/comida' || pathname === '/chat/comida' || pathname === '/settings/comida';
+                         pathname === '/dashboard/comida' || pathname === '/chat/comida' || pathname === '/settings/comida' ||
+                         pathname === '/settings/salud';
 
   if (isDashboardPage) {
     return <AppContent>{children}</AppContent>;

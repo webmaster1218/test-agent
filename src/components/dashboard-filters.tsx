@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
+import { usePathname } from 'next/navigation';
+import { getAgentTheme } from '@/lib/config/themes';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -55,7 +57,20 @@ export function DashboardFilters({
   onClearAll,
   loading = false
 }: DashboardFiltersProps) {
+  const pathname = usePathname();
+  const isComidaRoute = pathname.includes('/comida');
+  const agentType = isComidaRoute ? 'comida' : 'salud';
+  const agentTheme = getAgentTheme(agentType);
+
   const [openDropdown, setOpenDropdown] = React.useState<string | null>(null);
+
+  const getAgentColor = (opacity = '1') => {
+    const hex = agentTheme.primary.replace('#', '');
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
+    return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+  };
 
   const handleFilterSelect = (groupId: string, optionId: string, multiSelect?: boolean) => {
     const currentValues = activeFilters[groupId] || [];
@@ -109,11 +124,11 @@ export function DashboardFilters({
   }
 
   return (
-    <Card className="border-2 border-[#2C8082]/20">
+    <Card className="border-2 style={{ borderColor: getAgentColor('0.2') }}">
       <CardHeader className="pb-3 bg-gray-900/50 border-b border-gray-800">
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg flex items-center gap-2 text-white">
-            <Filter className="h-5 w-5 text-[#2C8082]" />
+            <Filter className="h-5 w-5 style={{ color: agentTheme.primary }}" />
             Filtros
             {getActiveFilterCount() > 0 && (
               <Badge variant="secondary" className="text-xs">
@@ -150,7 +165,7 @@ export function DashboardFilters({
                   <Button
                     variant={hasSelection ? "default" : "outline"}
                     size="sm"
-                    className="h-8 border-[#2C8082]/20 hover:border-[#2C8082]/40 transition-all duration-300"
+                    className="h-8 style={{ borderColor: getAgentColor('0.2') }} onMouseEnter={(e) => { e.currentTarget.style.borderColor = getAgentColor('0.4'); }} onMouseLeave={(e) => { e.currentTarget.style.borderColor = getAgentColor('0.2'); }} transition-all duration-300"
                   >
                     <div className="flex items-center gap-2">
                       {group.icon}
@@ -179,7 +194,7 @@ export function DashboardFilters({
                         className="flex items-center justify-between cursor-pointer"
                       >
                         <div className="flex items-center gap-2">
-                          {isSelected && <Check className="h-4 w-4 text-[#2C8082]" />}
+                          {isSelected && <Check className="h-4 w-4 style={{ color: agentTheme.primary }}" />}
                           <span className={isSelected ? "font-medium" : ""}>
                             {option.label}
                           </span>

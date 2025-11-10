@@ -5,8 +5,14 @@ import { Moon, Sun } from "lucide-react"
 import { useTheme } from "next-themes"
 
 import { Button } from "@/components/ui/button"
+import { getAgentTheme } from "@/lib/config/themes"
 
-export function ThemeToggle() {
+interface ThemeToggleProps {
+  agentId?: string;
+  className?: string;
+}
+
+export function ThemeToggle({ agentId = 'salud', className }: ThemeToggleProps) {
   const { setTheme, theme } = useTheme()
   const [mounted, setMounted] = React.useState(false)
 
@@ -18,12 +24,18 @@ export function ThemeToggle() {
     return null
   }
 
+  const agentTheme = getAgentTheme(agentId)
+
   return (
     <Button
       variant="ghost"
       size="icon"
       onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-      className="h-8 w-8 hover:bg-[#2C8082]/10 hover:text-[#2C8082] transition-all duration-300"
+      className={`h-8 w-8 transition-all duration-300 ${className || ''}`}
+      style={{
+        hoverBackgroundColor: `${agentTheme.primary}10`,
+        hoverColor: agentTheme.primary
+      }}
       suppressHydrationWarning
       title="Cambiar tema"
     >

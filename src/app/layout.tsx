@@ -29,18 +29,23 @@ export default function RootLayout({
         <script
           dangerouslySetInnerHTML={{
             __html: `
-              // Prevenir flash de tema - simple y no destructivo
+              // Prevenir flash de tema - establecer tema light inmediatamente
               (function() {
-                const path = window.location.pathname;
-                // Aplicar tema de comida solo a rutas específicas
-                if (path.includes('/chat/comida') || path.includes('/dashboard/comida') || path.includes('/settings/comida')) {
-                  document.documentElement.setAttribute('data-theme', 'comida');
+                // Si no hay tema guardado, usar light por defecto
+                const savedTheme = localStorage.getItem('marcos-chat-theme');
+                const theme = savedTheme || 'light';
+
+                // Aplicar tema inmediatamente antes de que la página renderice
+                if (theme === 'dark') {
+                  document.documentElement.classList.add('dark');
+                } else {
+                  document.documentElement.classList.remove('dark');
                 }
               })();
             `,
           }}
         />
-      </head>
+        </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         suppressHydrationWarning

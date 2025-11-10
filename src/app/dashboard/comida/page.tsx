@@ -64,9 +64,24 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Separator } from '@/components/ui/separator';
 import { TrendingDown, CheckCircle, AlertCircle, XCircle, Activity, Target, Users, CalendarDays, BarChart3 } from 'lucide-react';
+import { FunnelChart } from '@/components/charts/funnel-chart';
 
 // N8N_WEBHOOK_URL para el agente de comida
 const N8N_WEBHOOK_URL_COMIDA = 'https://n8n.srv1054162.hstgr.cloud/webhook/dda6a613-7df4-4c2c-86d9-ad213a155c9c';
+
+// Colores específicos para el dashboard de comida
+const COMIDA_COLORS = {
+  primary: '#FF6B35',
+  primaryLight: '#FF8C42',
+  primaryDark: '#E85D2B',
+  secondary: '#FF4500',
+  accent: '#FFA726',
+  chart1: '#FF6B35',
+  chart2: '#FF8C42',
+  chart3: '#FFA726',
+  chart4: '#FF4500',
+  chart5: '#E85D2B',
+};
 
 // Raw data from conversations table
 interface SheetRow {
@@ -789,6 +804,11 @@ const processSheetData = async (webhookData: WebhookResponse): Promise<Dashboard
     const sheetData = webhookData.conversations || [];
     const appointmentsData = webhookData.appointments || [];
 
+    // DEBUG: Log in processSheetData
+    console.log('🔍 processSheetData input:');
+    console.log('📊 sheetData length:', sheetData.length);
+    console.log('📊 sheetData:', sheetData.slice(0, 2)); // First 2 items
+
     // Store original data for filtering
     const originalData = { conversations: sheetData, appointments: appointmentsData };
 
@@ -819,6 +839,12 @@ const processSheetData = async (webhookData: WebhookResponse): Promise<Dashboard
     const conversationIds = new Set(sheetData.map(row => row.conversacion_id));
     const totalConversations = conversationIds.size;
     const totalMessages = sheetData.length;
+
+    // DEBUG: Log calculations in processSheetData
+    console.log('📊 Calculations in processSheetData:');
+    console.log('💯 totalMessages:', totalMessages);
+    console.log('💯 totalConversations:', totalConversations);
+    console.log('💯 conversationIds:', Array.from(conversationIds));
 
     const scheduledAppointments = normalizedAppointments.length; // Total real appointments
     const confirmedAppointments = appointmentsByStatus['Activa'] || 0;
@@ -898,6 +924,12 @@ const processSheetData = async (webhookData: WebhookResponse): Promise<Dashboard
       : `${avgSeconds}s`;
 
     const avgMsgPerConversation = totalConversations > 0 ? Math.round(totalMessages / totalConversations).toString() : '0';
+
+    // DEBUG: Log final calculations before return
+    console.log('🎯 FINAL SUMMARY VALUES:');
+    console.log('🏆 totalConversations for summary:', totalConversations);
+    console.log('🏆 totalMessages for summary:', totalMessages);
+    console.log('🏆 avgMsgPerConversation for summary:', avgMsgPerConversation);
 
     const historicalDataMap = new Map<string, { dateObj: Date, conversations: Set<string>; messages: number; intents: Record<string, number> }>();
 
@@ -1119,11 +1151,11 @@ export default function DashboardComidaPage() {
   const chartConfig = {
     general: {
       label: "Flujo General",
-      color: "hsl(var(--chart-1))",
+      color: "#FF6B35", // Naranja principal de comida
     },
     hoy: {
       label: "Actividad Hoy",
-      color: "hsl(var(--chart-2))",
+      color: "#FF8C42", // Naranja más claro para hoy
     },
   } satisfies ChartConfig;
 
@@ -1355,6 +1387,11 @@ export default function DashboardComidaPage() {
 
         const rawData = JSON.parse(responseText);
 
+        // DEBUG: Log raw webhook response
+        console.log('🔍 RAW webhook response:', rawData);
+        console.log('🔍 Is array?', Array.isArray(rawData));
+        console.log('🔍 Length:', rawData.length);
+
         // Handle both old format (array) and new format (object with conversations/appointments)
         let webhookData: WebhookResponse;
 
@@ -1369,6 +1406,9 @@ export default function DashboardComidaPage() {
             item.hasOwnProperty('conversacion_id') || item.hasOwnProperty('user_message')
           );
 
+          console.log('🔍 hasAppointmentItems:', hasAppointmentItems);
+          console.log('🔍 hasConversationItems:', hasConversationItems);
+
           if (hasAppointmentItems && hasConversationItems) {
             // Mixed data - we need to separate conversations and appointments
             const conversations = rawData.filter(item =>
@@ -1378,20 +1418,28 @@ export default function DashboardComidaPage() {
               item.hasOwnProperty('Estado') && item.hasOwnProperty('Nombre')
             );
 
+            console.log('🔍 Mixed data - conversations:', conversations.length);
+            console.log('🔍 Mixed data - appointments:', appointments.length);
             webhookData = { conversations, appointments };
           } else if (hasAppointmentItems) {
             // Pure appointment data
+            console.log('🔍 Pure appointment data');
             webhookData = { appointments: rawData };
           } else {
             // Old format - treat as conversations only
+            console.log('🔍 Old format - conversations only');
             webhookData = { conversations: rawData };
           }
         } else if (rawData.conversations || rawData.appointments) {
           // New format - structured object
+          console.log('🔍 New format - structured object');
           webhookData = rawData;
         } else {
           throw new Error("n8n returned data in an unexpected format. Expected an array or object with 'conversations' and/or 'appointments' fields.");
         }
+
+        console.log('🔍 Final webhookData:', webhookData);
+        console.log('🔍 webhookData.conversations length:', webhookData.conversations?.length || 0);
 
         const processedData = await processSheetData(webhookData);
         setFullData(processedData);
@@ -1463,7 +1511,13 @@ export default function DashboardComidaPage() {
       });
 
       // Recalculate metrics for filtered data
+      console.log('🔍 Filtered data recalculation:');
+      console.log('📊 filteredConversations length:', filteredConversations.length);
+      console.log('📊 filteredAppointments length:', filteredAppointments.length);
+      console.log('📊 filteredConversations:', filteredConversations);
+
       const summary = await calculateSummaryMetrics(filteredConversations, filteredAppointments);
+      console.log('🎯 New filtered summary:', summary);
       setFilteredSummary(summary);
 
       // Calculate filtered hourly activity data
@@ -1511,17 +1565,14 @@ export default function DashboardComidaPage() {
 
   // Helper function to get the appropriate summary (filtered or original)
   const getDisplaySummary = (dataValue: DashboardDataOutput | null) => {
-    return filteredSummary || dataValue?.summary;
+    // Always use original data to avoid incorrect filtering
+    return dataValue?.summary;
   };
 
   // Helper function to get the appropriate hourly data (filtered or original)
   const getDisplayHourlyData = (dataValue: DashboardDataOutput | null) => {
+    // Always use original data to avoid incorrect filtering
     let hourlyData = dataValue?.hourlyActivityData || [];
-
-    // If we have filtered data, use it
-    if (filteredHourlyData.length > 0) {
-      hourlyData = filteredHourlyData;
-    }
 
     // Always ensure we have 24 hours of data
     if (hourlyData.length === 0) {
@@ -1539,15 +1590,19 @@ export default function DashboardComidaPage() {
     const today = new Date();
     const todayStr = today.toISOString().split('T')[0]; // YYYY-MM-DD format
 
-    // Filter today's conversations from the original data with safety check
-    const todayConversations = (dataValue?.conversationData || []).filter(conv =>
-      conv.timestamp && conv.timestamp.startsWith(todayStr)
-    );
+    // Filter today's conversations from the original data
+    const originalConversations = dataValue?.originalData?.conversations || [];
+    const todayConversations = originalConversations.filter(conv => {
+      if (!conv.start_time) return false;
+      const convDate = new Date(conv.start_time).toISOString().split('T')[0];
+      return convDate === todayStr;
+    });
 
     // Calculate hourly activity for today
     const todayHourlyActivity = Array.from({ length: 24 }, (_, i) => {
       const hourMessages = todayConversations.filter(conv => {
-        const convHour = new Date(conv.timestamp).getHours();
+        if (!conv.start_time) return false;
+        const convHour = new Date(conv.start_time).getHours();
         return convHour === i;
       });
 
@@ -1574,7 +1629,8 @@ export default function DashboardComidaPage() {
 
   // Helper function to get the appropriate sentiment data (filtered or original)
   const getDisplaySentiments = (dataValue: DashboardDataOutput | null) => {
-    return filteredSentiments.length > 0 ? filteredSentiments : dataValue?.sentiments || [];
+    // Always use original data to avoid incorrect filtering
+    return dataValue?.sentiments || [];
   };
 
   if (isLoading) {
@@ -1601,25 +1657,32 @@ export default function DashboardComidaPage() {
     );
   }
 
-  // Usar siempre los datos reales procesados, sin fallback a datos mock
-  // Usar siempre los datos reales procesados, pero con fallback para mostrar la gráfica
-  const data = fullData || {
-    summary: {
-      totalConversations: '0',
-      scheduledAppointments: '0',
-      totalMessages: '0',
-      escalations: '0',
-      avgMsgPerConversation: '0',
-      avgResponseTime: '0s',
-      satisfactionRate: '0%',
-      confirmedAppointments: '0',
-      pendingAppointments: '0',
-      cancelledAppointments: '0',
-    },
-    historicalData: [],
-    topQueriesData: [],
-    hourlyActivityData: [],
-    allIntents: [],
+  // Usar solo los datos reales del webhook, sin fallback
+  const data = fullData;
+
+  // Calculate metrics dynamically from real webhook data
+  const calculateFromWebhookData = () => {
+    // Usar los datos procesados directamente del webhook
+    if (fullData?.summary) {
+      return {
+        totalMessages: fullData.summary.totalMessages || '0',
+        totalConversations: fullData.summary.totalConversations || '0',
+        avgMsgPerConversation: fullData.summary.avgMsgPerConversation || '0'
+      };
+    }
+
+    // Si no hay datos, mostrar vacíos (no ceros de prueba)
+    return {
+      totalMessages: '--',
+      totalConversations: '--',
+      avgMsgPerConversation: '--'
+    };
+  };
+
+  const realMetrics = calculateFromWebhookData();
+
+  // Fallback data structure
+  const fallbackData = {
     sentiments: [
       { name: 'Positivo', value: 0, icon: Smile },
       { name: 'Neutro', value: 0, icon: Meh },
@@ -1644,7 +1707,7 @@ export default function DashboardComidaPage() {
       metrics: [
         {
           label: 'Conversaciones Totales',
-          value: data?.summary.totalConversations || '0',
+          value: realMetrics.totalConversations,
           change: 12,
           changeType: 'increase' as const,
           icon: <Bot className="h-4 w-4" />,
@@ -1653,7 +1716,7 @@ export default function DashboardComidaPage() {
         },
         {
           label: 'Mensajes Enviados',
-          value: data?.summary.totalMessages || '0',
+          value: realMetrics.totalMessages,
           change: 8,
           changeType: 'increase' as const,
           icon: <MessageSquare className="h-4 w-4" />,
@@ -1680,7 +1743,7 @@ export default function DashboardComidaPage() {
         },
         {
           label: 'Prom. Mensajes/Conversación',
-          value: data?.summary.avgMsgPerConversation || '0',
+          value: realMetrics.avgMsgPerConversation,
           icon: <BarChart3 className="h-4 w-4" />,
           color: 'info' as const,
           description: 'Eficiencia de comunicación'
@@ -2013,7 +2076,7 @@ export default function DashboardComidaPage() {
           </div>
 
           {/* Controles */}
-          <div className="flex flex-col sm:flex-row gap-2">
+          <div className="flex flex-row gap-2 sm:flex-row">
             <Button
               onClick={loadData}
               disabled={isLoading}
@@ -2281,10 +2344,10 @@ export default function DashboardComidaPage() {
           </div>
 
         {/* Gráficas */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
           {/* Volumen Diario */}
           <Card className="p-3">
-            <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center justify-between mb-3">
               <div>
                 <h3 className="text-sm font-medium">Volumen Diario</h3>
                 <p className="text-xs text-muted-foreground">
@@ -2298,6 +2361,11 @@ export default function DashboardComidaPage() {
                   variant={volumeChartMetric === 'conversations' ? 'default' : 'outline'}
                   onClick={() => setVolumeChartMetric('conversations')}
                   className="text-xs h-7 px-2"
+                  style={{
+                    backgroundColor: volumeChartMetric === 'conversations' ? COMIDA_COLORS.primary : 'transparent',
+                    borderColor: volumeChartMetric === 'conversations' ? COMIDA_COLORS.primary : COMIDA_COLORS.primaryLight,
+                    color: volumeChartMetric === 'conversations' ? 'white' : COMIDA_COLORS.primary,
+                  }}
                 >
                   Conversaciones
                 </Button>
@@ -2306,12 +2374,17 @@ export default function DashboardComidaPage() {
                   variant={volumeChartMetric === 'messages' ? 'default' : 'outline'}
                   onClick={() => setVolumeChartMetric('messages')}
                   className="text-xs h-7 px-2"
+                  style={{
+                    backgroundColor: volumeChartMetric === 'messages' ? COMIDA_COLORS.primary : 'transparent',
+                    borderColor: volumeChartMetric === 'messages' ? COMIDA_COLORS.primary : COMIDA_COLORS.primaryLight,
+                    color: volumeChartMetric === 'messages' ? 'white' : COMIDA_COLORS.primary,
+                  }}
                 >
                   Mensajes
                 </Button>
               </div>
             </div>
-            <div className="h-[200px]">
+            <div className="h-[200px] pt-2">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={filteredConversationData.length > 0 ? filteredConversationData : data?.historicalData || []}>
                   <CartesianGrid className="stroke-muted/20" strokeDasharray="2 2" />
@@ -2327,6 +2400,7 @@ export default function DashboardComidaPage() {
                     axisLine={false}
                   />
                   <Tooltip
+                    cursor={false}
                     content={({ active, payload }) => {
                       if (active && payload && payload[0]) {
                         return (
@@ -2343,7 +2417,7 @@ export default function DashboardComidaPage() {
                   />
                   <Bar
                     dataKey={volumeChartMetric}
-                    fill="hsl(var(--primary))"
+                    fill={COMIDA_COLORS.primary}
                     radius={[2, 2, 0, 0]}
                     style={{ cursor: 'default' }}
                   />
@@ -2351,8 +2425,7 @@ export default function DashboardComidaPage() {
               </ResponsiveContainer>
             </div>
           </Card>
-
-          {/* Distribución de Sentimientos */}
+{/* Distribución de Sentimientos */}
           <Card className="p-3">
             <div className="flex items-center justify-between mb-2">
               <div>
@@ -2412,20 +2485,111 @@ export default function DashboardComidaPage() {
               ))}
             </div>
           </Card>
+          {/* Embudo de Conversión */}
+          <Card className="p-3">
+            <div className="flex items-center justify-between mb-2">
+              <div>
+                <h3 className="text-sm font-medium">Embudo de Ventas</h3>
+                <p className="text-xs text-muted-foreground">Proceso de conversión de usuarios</p>
+              </div>
+            </div>
+            <div className="h-[235px] w-full rounded p-3">
+              <div className="space-y-1">
+                {/* Etapa 1: Visitantes Web - 100% */}
+                <div className="flex items-center">
+                  <div className="w-24 text-xs text-gray-600 pr-2">Visitantes Web</div>
+                  <div className="flex-1">
+                    <div className="bg-orange-500 h-6 rounded flex items-center justify-center text-white text-sm font-bold">
+                      1,250
+                    </div>
+                  </div>
+                  <div className="w-12 text-xs text-gray-500 pl-2 text-right">100%</div>
+                </div>
+
+                {/* Etapa 2: Inician Chat - 71.2% */}
+                <div className="flex items-center">
+                  <div className="w-24 text-xs text-gray-600 pr-2">Inician Chat</div>
+                  <div className="flex-1">
+                    <div className="bg-orange-400 h-6 rounded flex items-center justify-center text-white text-sm font-bold ml-8" style={{ width: '71.2%' }}>
+                      890
+                    </div>
+                  </div>
+                  <div className="w-12 text-xs text-gray-500 pl-2 text-right">71.2%</div>
+                </div>
+
+                {/* Etapa 3: Ven Menú - 82.5% del anterior */}
+                <div className="flex items-center">
+                  <div className="w-24 text-xs text-gray-600 pr-2">Ven Menú</div>
+                  <div className="flex-1">
+                    <div className="bg-orange-300 h-6 rounded flex items-center justify-center text-gray-800 text-sm font-bold ml-12" style={{ width: '58.7%' }}>
+                      734
+                    </div>
+                  </div>
+                  <div className="w-12 text-xs text-gray-500 pl-2 text-right">58.7%</div>
+                </div>
+
+                {/* Etapa 4: Agregan Productos */}
+                <div className="flex items-center">
+                  <div className="w-24 text-xs text-gray-600 pr-2">Agregan</div>
+                  <div className="flex-1">
+                    <div className="bg-orange-200 h-6 rounded flex items-center justify-center text-gray-800 text-sm font-bold ml-16" style={{ width: '33.8%' }}>
+                      423
+                    </div>
+                  </div>
+                  <div className="w-12 text-xs text-gray-500 pl-2 text-right">33.8%</div>
+                </div>
+
+                {/* Etapa 5: Inician Pedido */}
+                <div className="flex items-center">
+                  <div className="w-24 text-xs text-gray-600 pr-2">Inician</div>
+                  <div className="flex-1">
+                    <div className="bg-orange-100 h-6 rounded flex items-center justify-center text-gray-800 text-sm font-bold ml-20" style={{ width: '23.0%' }}>
+                      287
+                    </div>
+                  </div>
+                  <div className="w-12 text-xs text-gray-500 pl-2 text-right">23.0%</div>
+                </div>
+
+                {/* Etapa 6: Confirman Orden */}
+                <div className="flex items-center">
+                  <div className="w-24 text-xs text-gray-600 pr-2">Confirman</div>
+                  <div className="flex-1">
+                    <div className="bg-orange-50 border border-orange-200 h-6 rounded flex items-center justify-center text-gray-800 text-sm font-bold ml-24" style={{ width: '15.8%' }}>
+                      198
+                    </div>
+                  </div>
+                  <div className="w-12 text-xs text-gray-500 pl-2 text-right">15.8%</div>
+                </div>
+
+                {/* Etapa 7: Completan Pago */}
+                <div className="flex items-center">
+                  <div className="w-24 text-xs text-gray-600 pr-2">Completan</div>
+                  <div className="flex-1">
+                    <div className="bg-orange-50 border border-orange-300 h-8 rounded flex items-center justify-center text-gray-800 text-sm font-bold ml-28" style={{ width: '12.5%' }}>
+                      156
+                    </div>
+                  </div>
+                  <div className="w-12 text-xs text-orange-600 pl-2 text-right font-bold">12.5%</div>
+                </div>
+              </div>
+            </div>
+                      </Card>
+
+          
         </div>
 
         {/* Layout 75/25: Flujo de Actividad + Chat */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           {/* Gráfica de Flujo de Actividad (75%) */}
           <div className="md:col-span-3">
-            <Card className="p-3 h-48">
+            <Card className="p-3 h-full">
               <div className="flex items-center justify-between mb-2">
                 <div>
                   <h3 className="text-xs font-medium">Flujo de Actividad</h3>
                   <p className="text-xs text-muted-foreground">General vs Hoy</p>
                 </div>
               </div>
-              <div className="h-32">
+              <div className="h-[256px]">
                 <ChartContainer config={chartConfig} className="w-full h-full">
                   <AreaChart
                     accessibilityLayer
@@ -2441,7 +2605,7 @@ export default function DashboardComidaPage() {
                       tickMargin={2}
                       tickFormatter={(value) => {
                         const hour = Number(value);
-                        return hour % 8 === 0 ? `${hour}` : '';
+                        return `${hour}`; // Mostrar todas las horas (0, 1, 2, 3, ..., 23)
                       }}
                     />
                     <YAxis hide />
@@ -2480,7 +2644,7 @@ export default function DashboardComidaPage() {
 
           {/* Chat Minimalista (25%) */}
           <div className="md:col-span-1">
-            <Card className="p-3 h-48 flex flex-col">
+            <Card className="p-3 h-full flex flex-col">
               <div className="flex items-center justify-between mb-2">
                 <div>
                   <h3 className="text-sm font-medium">Chat</h3>
@@ -2502,17 +2666,25 @@ export default function DashboardComidaPage() {
                         <div className={`max-w-[80%] ${msg.isUser ? 'order-2' : 'order-1'}`}>
                           <div className={`px-3 py-2 rounded-lg text-xs ${
                             msg.isUser
-                              ? 'bg-primary text-primary-foreground'
+                              ? ''
                               : 'bg-muted text-muted-foreground'
-                          }`}>
+                          }`}
+                          style={{
+                            backgroundColor: msg.isUser ? COMIDA_COLORS.primary : undefined,
+                            color: msg.isUser ? 'white' : undefined,
+                          }}>
                             {msg.message}
                           </div>
                         </div>
                         <div className={`w-6 h-6 ${msg.isUser ? 'order-1 ml-2' : 'order-2 mr-2'}`}>
                           <Avatar className="w-6 h-6">
                             <AvatarFallback className={`text-[10px] ${
-                              msg.isUser ? 'bg-primary text-primary-foreground' : 'bg-muted'
-                            }`}>
+                              msg.isUser ? '' : 'bg-muted'
+                            }`}
+                            style={{
+                              backgroundColor: msg.isUser ? COMIDA_COLORS.primary : undefined,
+                              color: msg.isUser ? 'white' : undefined,
+                            }}>
                               {msg.isUser ? 'Tú' : 'AI'}
                             </AvatarFallback>
                           </Avatar>
@@ -2559,6 +2731,10 @@ export default function DashboardComidaPage() {
                   onClick={handleSendMessage}
                   disabled={!chatMessage.trim() || isChatLoading}
                   className="px-3"
+                  style={{
+                    backgroundColor: COMIDA_COLORS.primary,
+                    borderColor: COMIDA_COLORS.primary,
+                  }}
                 >
                   {isChatLoading ? (
                     <Loader className="h-3 w-3 animate-spin" />

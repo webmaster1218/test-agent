@@ -4,6 +4,8 @@ import { useState, type KeyboardEvent, useRef, useEffect } from 'react';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { ArrowUp } from 'lucide-react';
+import { usePathname } from 'next/navigation';
+import { getAgentTheme } from '@/lib/config/themes';
 
 interface ChatInputProps {
   onSendMessage: (content: string) => void;
@@ -13,6 +15,18 @@ interface ChatInputProps {
 export default function ChatInput({ onSendMessage, isLoading }: ChatInputProps) {
   const [input, setInput] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const pathname = usePathname();
+  const isComidaRoute = pathname.includes('/comida');
+  const agentType = isComidaRoute ? 'comida' : 'salud';
+  const agentTheme = getAgentTheme(agentType);
+
+  const getAgentColor = (opacity = '1') => {
+    const hex = agentTheme.primary.replace('#', '');
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
+    return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInput(e.target.value);
@@ -42,8 +56,14 @@ export default function ChatInput({ onSendMessage, isLoading }: ChatInputProps) 
   };
 
   return (
-    <div className="p-3 bg-orange-500/5 backdrop-blur-sm border-t border-orange-500/10">
-      <form onSubmit={handleSubmit} className="flex items-start gap-3">
+    <div
+      className="p-3 sm:p-4 backdrop-blur-sm border-t"
+      style={{
+        backgroundColor: getAgentColor('0.05'),
+        borderColor: getAgentColor('0.1')
+      }}
+    >
+      <form onSubmit={handleSubmit} className="flex items-start gap-2 sm:gap-3">
         <Textarea
           ref={textareaRef}
           value={input}
@@ -52,7 +72,10 @@ export default function ChatInput({ onSendMessage, isLoading }: ChatInputProps) 
           placeholder="Escribe un mensaje al asistente..."
           disabled={isLoading}
           rows={1}
-          className="flex-1 bg-background/80 backdrop-blur-sm border border-orange-500/20 focus:border-orange-500/40 focus-visible:ring-2 focus-visible:ring-orange-500/20 resize-none max-h-32 rounded-lg transition-all duration-300 placeholder:text-muted-foreground/70 custom-scrollbar"
+          className="flex-1 bg-background/80 backdrop-blur-sm border resize-none max-h-32 rounded-lg transition-all duration-300 placeholder:text-muted-foreground/70 custom-scrollbar text-sm sm:text-base"
+          style={{
+            borderColor: getAgentColor('0.2')
+          }}
         />
         <Button
           type="submit"
@@ -60,11 +83,11 @@ export default function ChatInput({ onSendMessage, isLoading }: ChatInputProps) 
           disabled={isLoading || !input.trim()}
           aria-label="Enviar mensaje"
           style={{
-            background: 'linear-gradient(to right, #FF6B35, rgba(255, 107, 53, 0.8))',
+            background: `linear-gradient(to right, ${agentTheme.primary}, ${agentTheme.primary}CC)`,
             color: 'white',
             border: 'none'
           }}
-          className="rounded-full shrink-0 hover:shadow-lg hover:shadow-orange-500/25 hover:scale-105 transition-all duration-300"
+          className="rounded-full shrink-0 hover:shadow-lg hover:scale-105 transition-all duration-300 h-10 w-10 sm:h-10 sm:w-10"
         >
           <ArrowUp className="h-4 w-4" />
         </Button>

@@ -9,11 +9,11 @@ export interface AgentTheme {
 
 export const agentThemes: Record<string, AgentTheme> = {
   salud: {
-    primary: '#4229FF',
-    secondary: '#6366F1',
-    accent: '#818CF8',
-    background: 'rgba(66, 41, 255, 0.08)',
-    plasma: '#4229FF',
+    primary: '#2C8082',
+    secondary: '#1f5a5c',
+    accent: '#236667',
+    background: 'rgba(44, 128, 130, 0.08)',
+    plasma: '#2C8082',
     name: 'Salud'
   },
   comida: {

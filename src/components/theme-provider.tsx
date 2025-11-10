@@ -19,9 +19,10 @@ export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
     setMounted(true)
   }, [])
 
+  // Evitar flash de tema con mejor transición
   if (!mounted) {
     return (
-      <div style={{ visibility: 'hidden' }}>
+      <div style={{ visibility: 'hidden', position: 'absolute', top: 0, left: 0, right: 0 }}>
         {children}
       </div>
     )

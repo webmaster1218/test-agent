@@ -69,11 +69,11 @@ export default function AgentSelector({ selectedAgent, onAgentChange, theme }: A
   const selectedAgentData = agents.find(agent => agent.id === selectedAgent) || agents[0];
 
   return (
-    <div className="relative mb-6">
+    <div className="relative mb-4 sm:mb-6">
       <div className="relative">
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="w-full px-6 py-4 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl text-white font-medium text-left flex items-center justify-between hover:bg-white/15 hover:border-white/30 hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] shadow-lg"
+          className="w-full px-4 sm:px-6 py-3 sm:py-4 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl text-white font-medium text-left flex items-center justify-between hover:bg-white/15 hover:border-white/30 hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] shadow-lg"
           style={{
             borderColor: `${theme.primary}33`,
             boxShadow: `0 0 20px ${theme.primary}33`,
@@ -81,17 +81,17 @@ export default function AgentSelector({ selectedAgent, onAgentChange, theme }: A
           onMouseEnter={() => setHoveredAgent(selectedAgentData.id)}
           onMouseLeave={() => setHoveredAgent(null)}
         >
-          <div className="flex items-center space-x-4 group">
+          <div className="flex items-center space-x-3 sm:space-x-4 group">
             <div className="flex-shrink-0 transition-colors duration-300" style={{ color: theme.secondary }}>
               {selectedAgentData.icon}
             </div>
-            <div className="flex-1">
-              <div className="text-lg font-semibold group-hover:text-white transition-colors duration-300">{selectedAgentData.name}</div>
-              <div className="text-sm text-white/70 mt-1 group-hover:text-white/80 transition-colors duration-300">{selectedAgentData.description}</div>
+            <div className="flex-1 min-w-0">
+              <div className="text-base sm:text-lg font-semibold group-hover:text-white transition-colors duration-300 truncate">{selectedAgentData.name}</div>
+              <div className="text-xs sm:text-sm text-white/70 mt-1 group-hover:text-white/80 transition-colors duration-300 truncate">{selectedAgentData.description}</div>
             </div>
           </div>
           <svg
-            className={`w-5 h-5 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''} flex-shrink-0 ml-3`}
+            className={`w-4 h-4 sm:w-5 sm:h-5 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''} flex-shrink-0 ml-2 sm:ml-3`}
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -105,7 +105,7 @@ export default function AgentSelector({ selectedAgent, onAgentChange, theme }: A
           <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 -translate-y-full bg-white/95 backdrop-blur-md border border-white/30 rounded-lg px-4 py-3 shadow-2xl z-50 animate-fade-in-up max-w-xs">
             <div className="flex items-start justify-between mb-2">
               <div className="text-sm font-semibold text-gray-800 flex items-center">
-                <span className="mr-2" style={{ color: selectedAgentForTooltip.id === 'salud' ? '#4229FF' : '#FF6B35' }}>
+                <span className="mr-2" style={{ color: selectedAgentForTooltip.id === 'salud' ? '#2C8082' : '#FF6B35' }}>
                   {selectedAgentForTooltip.icon}
                 </span>
                 ¿Qué puedo preguntarle?
@@ -148,7 +148,7 @@ export default function AgentSelector({ selectedAgent, onAgentChange, theme }: A
         <div className="absolute top-full left-0 right-0 mt-2 bg-black/95 backdrop-blur-xl border border-white/20 rounded-xl shadow-2xl z-50 overflow-hidden">
           {agents.map((agent) => {
             const agentTheme = agent.id === 'salud' ?
-              { primary: '#4229FF', secondary: '#6366F1' } :
+              { primary: '#2C8082', secondary: '#1f5a5c' } :
               { primary: '#FF6B35', secondary: '#FF8C42' };
 
             return (

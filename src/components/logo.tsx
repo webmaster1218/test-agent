@@ -1,10 +1,12 @@
 import React from 'react';
+import { getAgentTheme } from '@/lib/config/themes';
 
 export default function Logo({ className = '', agentType = 'salud' }: { className?: string; agentType?: 'salud' | 'comida' }) {
-  // Determinar colores según el tipo de agente
-  const primaryColor = agentType === 'comida' ? '#FF6B35' : '#2C8082';
-  const secondaryColor = agentType === 'comida' ? '#FF4500' : '#1f5a5c';
-  const eyeColor = agentType === 'comida' ? '#FF4500' : '#2C8082';
+  // Obtener colores del sistema centralizado
+  const agentTheme = getAgentTheme(agentType);
+  const primaryColor = agentTheme.primary;
+  const secondaryColor = agentTheme.secondary;
+  const eyeColor = agentTheme.primary;
   const gradientId = `gradient1-${agentType}`;
 
   return (
