@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import 'leaflet/dist/leaflet.css';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { AreaChart, Bar, BarChart, CartesianGrid, Pie, PieChart, ResponsiveContainer, XAxis, YAxis, Legend, Cell, Sector, Area, Tooltip, LineChart, Line, LabelList } from 'recharts';
@@ -38,7 +39,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Calendar as CalendarIcon, Bot, MessageCircle, User, MessageSquare, Clock, Zap, Loader, ServerCrash, RefreshCw, PhoneForwarded, Smile, Frown, Meh, Download, FileSpreadsheet, FileText, File, FileImage, Filter, Package, DollarSign, Receipt, TrendingUp, ShoppingCart, Coffee, ArrowUpDown, ChevronDown, MoreHorizontal } from 'lucide-react';
+import { Calendar as CalendarIcon, Bot, MessageCircle, User, MessageSquare, Clock, Zap, Loader, ServerCrash, RefreshCw, PhoneForwarded, Smile, Frown, Meh, Download, FileSpreadsheet, FileText, File, FileImage, Filter, Package, DollarSign, Receipt, TrendingUp, ShoppingCart, Coffee, ArrowUpDown, ChevronDown, MoreHorizontal, MapPin } from 'lucide-react';
 import { DateRange } from 'react-day-picker';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { TooltipProvider } from '@/components/ui/tooltip';
@@ -65,6 +66,7 @@ import { Progress } from '@/components/ui/progress';
 import { Separator } from '@/components/ui/separator';
 import { TrendingDown, CheckCircle, AlertCircle, XCircle, Activity, Target, Users, CalendarDays, BarChart3 } from 'lucide-react';
 import { FunnelChart } from '@/components/charts/funnel-chart';
+import { direccionesReales } from '@/lib/pedidos-utils';
 
 // N8N_WEBHOOK_URL para el agente de comida
 const N8N_WEBHOOK_URL_COMIDA = 'https://n8n.srv1054162.hstgr.cloud/webhook/dda6a613-7df4-4c2c-86d9-ad213a155c9c';
@@ -1164,7 +1166,7 @@ export default function DashboardComidaPage() {
     id: i + 12,
     cliente_telefono: ["3004435894", "3115567890", "3109876543", "3152345678", "3128765432"][Math.floor(Math.random() * 5)],
     cliente_nombre: ["Jhon neider", "Maria Rodriguez", "Carlos Lopez", "Ana Martinez", "Diego Hernandez"][Math.floor(Math.random() * 5)],
-    cliente_direccion: ["calle larga 67dc", "calle 79fallecs", "avenida principal 123", "carrera 5 #12-34", "transversal 8 #45-67"][Math.floor(Math.random() * 5)],
+    cliente_direccion: direccionesReales[Math.floor(Math.random() * direccionesReales.length)],
     productos: ["3 tacos al pastor 1 agua de horchata", "2 porciones de Birria carne en sus jugos y 1 horchata", "2 quesadillas con queso y 1 cerveza", "1 combo familiar y 2 horchatas", "2 tacos al pastor y 1 agua de tamarindo", "1 orden de nachos y 2 cervezas"][Math.floor(Math.random() * 6)],
     total_precio: String(Math.floor(Math.random() * 80000) + 20000),
     fecha_pedido: new Date(Date.now() - Math.floor(Math.random() * 72 * 60 * 60 * 1000)).toISOString()
@@ -2057,7 +2059,7 @@ export default function DashboardComidaPage() {
     id: i + 12,
     cliente_telefono: ["3004435894", "3115567890", "3109876543", "3152345678", "3128765432"][Math.floor(Math.random() * 5)],
     cliente_nombre: ["Jhon neider", "Maria Rodriguez", "Carlos Lopez", "Ana Martinez", "Diego Hernandez"][Math.floor(Math.random() * 5)],
-    cliente_direccion: ["calle larga 67dc", "calle 79fallecs", "avenida principal 123", "carrera 5 #12-34", "transversal 8 #45-67"][Math.floor(Math.random() * 5)],
+    cliente_direccion: direccionesReales[Math.floor(Math.random() * direccionesReales.length)],
     productos: ["3 tacos al pastor 1 agua de horchata", "2 porciones de Birria carne en sus jugos y 1 horchata", "2 quesadillas con queso y 1 cerveza", "1 combo familiar y 2 horchatas", "2 tacos al pastor y 1 agua de tamarindo", "1 orden de nachos y 2 cervezas"][Math.floor(Math.random() * 6)],
     total_precio: String(Math.floor(Math.random() * 80000) + 20000),
     fecha_pedido: new Date(Date.now() - Math.floor(Math.random() * 72 * 60 * 60 * 1000)).toISOString()
@@ -2288,7 +2290,7 @@ export default function DashboardComidaPage() {
               </div>
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Conversaciones</p>
-                <p className="text-2xl font-bold text-[#FF6B35]">{getDisplaySummary(data)?.totalConversations || '0'}</p>
+                <p className="text-2xl font-bold text-black dark:text-white">{getDisplaySummary(data)?.totalConversations || '0'}</p>
               </div>
             </div>
           </Card>
@@ -2300,7 +2302,7 @@ export default function DashboardComidaPage() {
               </div>
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Mensajes</p>
-                <p className="text-2xl font-bold text-[#FF6B35]">{getDisplaySummary(data)?.totalMessages || '0'}</p>
+                <p className="text-2xl font-bold text-black dark:text-white">{getDisplaySummary(data)?.totalMessages || '0'}</p>
               </div>
             </div>
           </Card>
@@ -2312,7 +2314,7 @@ export default function DashboardComidaPage() {
               </div>
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Prom. Msg/Conv</p>
-                <p className="text-2xl font-bold text-[#FF6B35]">{getDisplaySummary(data)?.avgMsgPerConversation || '0'}</p>
+                <p className="text-2xl font-bold text-black dark:text-white">{getDisplaySummary(data)?.avgMsgPerConversation || '0'}</p>
               </div>
             </div>
           </Card>
@@ -2324,7 +2326,7 @@ export default function DashboardComidaPage() {
               </div>
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Escalados</p>
-                <p className="text-2xl font-bold text-[#FF6B35]">{getDisplaySummary(data)?.escalations || '0'}</p>
+                <p className="text-2xl font-bold text-black dark:text-white">{getDisplaySummary(data)?.escalations || '0'}</p>
               </div>
             </div>
           </Card>
@@ -2336,7 +2338,7 @@ export default function DashboardComidaPage() {
               </div>
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Tiempo Respuesta</p>
-                <p className="text-2xl font-bold text-[#FF6B35]">{getDisplaySummary(data)?.avgResponseTime || '0s'}</p>
+                <p className="text-2xl font-bold text-black dark:text-white">{getDisplaySummary(data)?.avgResponseTime || '0s'}</p>
               </div>
             </div>
           </Card>
@@ -2355,33 +2357,29 @@ export default function DashboardComidaPage() {
                 </p>
               </div>
               {/* Botón de toggle */}
-              <div className="flex gap-1">
-                <Button
-                  size="sm"
-                  variant={volumeChartMetric === 'conversations' ? 'default' : 'outline'}
+              <div className="inline-flex items-center justify-center rounded-lg bg-muted p-1 text-muted-foreground">
+                <button
+                  type="button"
+                  className={`inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1 text-xs font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 ${
+                    volumeChartMetric === 'conversations'
+                      ? 'bg-background text-foreground shadow-sm'
+                      : 'hover:bg-background/50'
+                  }`}
                   onClick={() => setVolumeChartMetric('conversations')}
-                  className="text-xs h-7 px-2"
-                  style={{
-                    backgroundColor: volumeChartMetric === 'conversations' ? COMIDA_COLORS.primary : 'transparent',
-                    borderColor: volumeChartMetric === 'conversations' ? COMIDA_COLORS.primary : COMIDA_COLORS.primaryLight,
-                    color: volumeChartMetric === 'conversations' ? 'white' : COMIDA_COLORS.primary,
-                  }}
                 >
                   Conversaciones
-                </Button>
-                <Button
-                  size="sm"
-                  variant={volumeChartMetric === 'messages' ? 'default' : 'outline'}
+                </button>
+                <button
+                  type="button"
+                  className={`inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1 text-xs font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 ${
+                    volumeChartMetric === 'messages'
+                      ? 'bg-background text-foreground shadow-sm'
+                      : 'hover:bg-background/50'
+                  }`}
                   onClick={() => setVolumeChartMetric('messages')}
-                  className="text-xs h-7 px-2"
-                  style={{
-                    backgroundColor: volumeChartMetric === 'messages' ? COMIDA_COLORS.primary : 'transparent',
-                    borderColor: volumeChartMetric === 'messages' ? COMIDA_COLORS.primary : COMIDA_COLORS.primaryLight,
-                    color: volumeChartMetric === 'messages' ? 'white' : COMIDA_COLORS.primary,
-                  }}
                 >
                   Mensajes
-                </Button>
+                </button>
               </div>
             </div>
             <div className="h-[200px] pt-2">
@@ -2487,93 +2485,137 @@ export default function DashboardComidaPage() {
           </Card>
           {/* Embudo de Conversión */}
           <Card className="p-3">
-            <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center justify-between mb-3">
               <div>
                 <h3 className="text-sm font-medium">Embudo de Ventas</h3>
                 <p className="text-xs text-muted-foreground">Proceso de conversión de usuarios</p>
               </div>
             </div>
-            <div className="h-[235px] w-full rounded p-3">
-              <div className="space-y-1">
-                {/* Etapa 1: Visitantes Web - 100% */}
-                <div className="flex items-center">
-                  <div className="w-24 text-xs text-gray-600 pr-2">Visitantes Web</div>
-                  <div className="flex-1">
-                    <div className="bg-orange-500 h-6 rounded flex items-center justify-center text-white text-sm font-bold">
-                      1,250
+            <div className="space-y-2.5">
+              {/* Etapa 1: Inician Chat */}
+              <div className="flex items-center gap-2.5">
+                <div className="w-24 text-xs font-medium text-foreground">Inician Chat</div>
+                <div className="flex-1">
+                  <div className="h-5 bg-gray-100 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-gradient-to-r from-[#FF6B35] to-[#FF8C42] rounded-full flex items-center justify-center text-white text-xs font-bold"
+                      style={{ width: '100%' }}
+                    >
+                      {getDisplaySummary(data)?.totalConversations || '1,247'}
                     </div>
                   </div>
-                  <div className="w-12 text-xs text-gray-500 pl-2 text-right">100%</div>
                 </div>
-
-                {/* Etapa 2: Inician Chat - 71.2% */}
-                <div className="flex items-center">
-                  <div className="w-24 text-xs text-gray-600 pr-2">Inician Chat</div>
-                  <div className="flex-1">
-                    <div className="bg-orange-400 h-6 rounded flex items-center justify-center text-white text-sm font-bold ml-8" style={{ width: '71.2%' }}>
-                      890
-                    </div>
-                  </div>
-                  <div className="w-12 text-xs text-gray-500 pl-2 text-right">71.2%</div>
+                <div className="w-16 text-xs text-right">
+                  <div className="font-bold text-[#FF6B35]">{getDisplaySummary(data)?.totalConversations || '1,247'}</div>
+                  <div className="text-muted-foreground">100%</div>
                 </div>
+              </div>
 
-                {/* Etapa 3: Ven Menú - 82.5% del anterior */}
-                <div className="flex items-center">
-                  <div className="w-24 text-xs text-gray-600 pr-2">Ven Menú</div>
-                  <div className="flex-1">
-                    <div className="bg-orange-300 h-6 rounded flex items-center justify-center text-gray-800 text-sm font-bold ml-12" style={{ width: '58.7%' }}>
-                      734
+              {/* Etapa 2: Ven Menú */}
+              <div className="flex items-center gap-2.5">
+                <div className="w-24 text-xs font-medium text-foreground">Ven Menú</div>
+                <div className="flex-1">
+                  <div className="h-5 bg-gray-100 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-gradient-to-r from-[#FF8C42] to-[#FFA726] rounded-full flex items-center justify-center text-white text-xs font-bold"
+                      style={{ width: '75%' }}
+                    >
+                      {getDisplaySummary(data)?.totalConversations ?
+                        Math.round((parseInt(getDisplaySummary(data)?.totalConversations || '0') * 0.75).toString()) :
+                        '935'
+                      }
                     </div>
                   </div>
-                  <div className="w-12 text-xs text-gray-500 pl-2 text-right">58.7%</div>
                 </div>
-
-                {/* Etapa 4: Agregan Productos */}
-                <div className="flex items-center">
-                  <div className="w-24 text-xs text-gray-600 pr-2">Agregan</div>
-                  <div className="flex-1">
-                    <div className="bg-orange-200 h-6 rounded flex items-center justify-center text-gray-800 text-sm font-bold ml-16" style={{ width: '33.8%' }}>
-                      423
-                    </div>
+                <div className="w-16 text-xs text-right">
+                  <div className="font-bold text-[#FF8C42]">
+                    {getDisplaySummary(data)?.totalConversations ?
+                      Math.round((parseInt(getDisplaySummary(data)?.totalConversations || '0') * 0.75).toString()) :
+                      '935'
+                    }
                   </div>
-                  <div className="w-12 text-xs text-gray-500 pl-2 text-right">33.8%</div>
+                  <div className="text-muted-foreground">75%</div>
                 </div>
+              </div>
 
-                {/* Etapa 5: Inician Pedido */}
-                <div className="flex items-center">
-                  <div className="w-24 text-xs text-gray-600 pr-2">Inician</div>
-                  <div className="flex-1">
-                    <div className="bg-orange-100 h-6 rounded flex items-center justify-center text-gray-800 text-sm font-bold ml-20" style={{ width: '23.0%' }}>
-                      287
+              {/* Etapa 3: Piden */}
+              <div className="flex items-center gap-2.5">
+                <div className="w-24 text-xs font-medium text-foreground">Piden</div>
+                <div className="flex-1">
+                  <div className="h-5 bg-gray-100 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-gradient-to-r from-[#FFA726] to-[#FFB74D] rounded-full flex items-center justify-center text-gray-800 text-xs font-bold"
+                      style={{ width: '45%' }}
+                    >
+                      {getDisplaySummary(data)?.totalConversations ?
+                        Math.round((parseInt(getDisplaySummary(data)?.totalConversations || '0') * 0.45).toString()) :
+                        '561'
+                      }
                     </div>
                   </div>
-                  <div className="w-12 text-xs text-gray-500 pl-2 text-right">23.0%</div>
                 </div>
-
-                {/* Etapa 6: Confirman Orden */}
-                <div className="flex items-center">
-                  <div className="w-24 text-xs text-gray-600 pr-2">Confirman</div>
-                  <div className="flex-1">
-                    <div className="bg-orange-50 border border-orange-200 h-6 rounded flex items-center justify-center text-gray-800 text-sm font-bold ml-24" style={{ width: '15.8%' }}>
-                      198
-                    </div>
+                <div className="w-16 text-xs text-right">
+                  <div className="font-bold text-[#FFA726]">
+                    {getDisplaySummary(data)?.totalConversations ?
+                      Math.round((parseInt(getDisplaySummary(data)?.totalConversations || '0') * 0.45).toString()) :
+                      '561'
+                    }
                   </div>
-                  <div className="w-12 text-xs text-gray-500 pl-2 text-right">15.8%</div>
+                  <div className="text-muted-foreground">45%</div>
                 </div>
+              </div>
 
-                {/* Etapa 7: Completan Pago */}
-                <div className="flex items-center">
-                  <div className="w-24 text-xs text-gray-600 pr-2">Completan</div>
-                  <div className="flex-1">
-                    <div className="bg-orange-50 border border-orange-300 h-8 rounded flex items-center justify-center text-gray-800 text-sm font-bold ml-28" style={{ width: '12.5%' }}>
-                      156
+              {/* Etapa 4: Confirman Pedido */}
+              <div className="flex items-center gap-2.5">
+                <div className="w-24 text-xs font-medium text-foreground">Confirman</div>
+                <div className="flex-1">
+                  <div className="h-5 bg-gray-100 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-gradient-to-r from-[#FFB74D] to-[#FFCC80] rounded-full flex items-center justify-center text-gray-800 text-xs font-bold"
+                      style={{ width: '25%' }}
+                    >
+                      {getDisplaySummary(data)?.totalConversations ?
+                        Math.round((parseInt(getDisplaySummary(data)?.totalConversations || '0') * 0.25).toString()) :
+                        '312'
+                      }
                     </div>
                   </div>
-                  <div className="w-12 text-xs text-orange-600 pl-2 text-right font-bold">12.5%</div>
+                </div>
+                <div className="w-16 text-xs text-right">
+                  <div className="font-bold text-[#FFB74D]">
+                    {getDisplaySummary(data)?.totalConversations ?
+                      Math.round((parseInt(getDisplaySummary(data)?.totalConversations || '0') * 0.25).toString()) :
+                      '312'
+                    }
+                  </div>
+                  <div className="text-muted-foreground">25%</div>
+                </div>
+              </div>
+
+              {/* Resumen */}
+              <div className="pt-3 mt-3 border-t border-border/50">
+                <div className="grid grid-cols-3 gap-4 text-center">
+                  <div>
+                    <div className="text-lg font-bold text-[#FF6B35]">{getDisplaySummary(data)?.totalConversations || '1,247'}</div>
+                    <div className="text-xs text-muted-foreground">Inician Chat</div>
+                  </div>
+                  <div>
+                    <div className="text-lg font-bold text-[#FFB74D]">
+                      {getDisplaySummary(data)?.totalConversations ?
+                        Math.round((parseInt(getDisplaySummary(data)?.totalConversations || '0') * 0.25).toString()) :
+                        '312'
+                      }
+                    </div>
+                    <div className="text-xs text-muted-foreground">Confirman</div>
+                  </div>
+                  <div>
+                    <div className="text-lg font-bold text-[#FF8C42]">25%</div>
+                    <div className="text-xs text-muted-foreground">Conversión</div>
+                  </div>
                 </div>
               </div>
             </div>
-                      </Card>
+          </Card>
 
           
         </div>
@@ -2759,7 +2801,7 @@ export default function DashboardComidaPage() {
                   </div>
                   <div>
                     <p className="text-sm font-medium text-muted-foreground">Total Pedidos</p>
-                    <p className="text-2xl font-bold text-[#FF6B35]">{pedidosMetrics.totalPedidos}</p>
+                    <p className="text-2xl font-bold text-black dark:text-white">{pedidosMetrics.totalPedidos}</p>
                   </div>
                 </div>
               </Card>
@@ -2771,7 +2813,7 @@ export default function DashboardComidaPage() {
                   </div>
                   <div>
                     <p className="text-sm font-medium text-muted-foreground">Ingresos Totales</p>
-                    <p className="text-2xl font-bold text-[#FF6B35]">$1.358.000</p>
+                    <p className="text-2xl font-bold text-black dark:text-white">$1.358.000</p>
                   </div>
                 </div>
               </Card>
@@ -2783,7 +2825,7 @@ export default function DashboardComidaPage() {
                   </div>
                   <div>
                     <p className="text-sm font-medium text-muted-foreground">Valor pedido promedio</p>
-                    <p className="text-2xl font-bold text-[#FF6B35]">$65.000</p>
+                    <p className="text-2xl font-bold text-black dark:text-white">$65.000</p>
                   </div>
                 </div>
               </Card>
@@ -2795,7 +2837,7 @@ export default function DashboardComidaPage() {
                   </div>
                   <div>
                     <p className="text-sm font-medium text-muted-foreground">Prod. por Pedido</p>
-                    <p className="text-2xl font-bold text-[#FF6B35]">{pedidosMetrics.avgProductosPorPedido}</p>
+                    <p className="text-2xl font-bold text-black dark:text-white">{pedidosMetrics.avgProductosPorPedido}</p>
                   </div>
                 </div>
               </Card>
@@ -2807,14 +2849,14 @@ export default function DashboardComidaPage() {
                   </div>
                   <div>
                     <p className="text-sm font-medium text-muted-foreground">Top Producto</p>
-                    <p className="text-2xl font-bold text-[#FF6B35]">taco al pastor</p>
+                    <p className="text-2xl font-bold text-black dark:text-white">taco al pastor</p>
                   </div>
                 </div>
               </Card>
             </div>
 
             {/* Gráficas de Pedidos */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
               {/* Productos Más Vendidos */}
               <Card className="p-3">
                 <div className="flex items-center justify-between mb-2">
@@ -2854,67 +2896,54 @@ export default function DashboardComidaPage() {
               </Card>
 
               {/* Categorías Populares */}
-              <Card className="p-3">
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-sm font-medium">Categorías Populares</h3>
-                  <Button variant="ghost" size="sm" className="h-6 text-xs">
-                    <Coffee className="h-3 w-3" />
-                  </Button>
-                </div>
-                <div className="h-[200px]">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart
-                      data={pedidosMetrics.categoriasPopulares.length > 0 ? pedidosMetrics.categoriasPopulares : [
-  { name: "Tacos", value: 45 },
-  { name: "Bebidas", value: 32 },
-  { name: "Especialidades", value: 28 }
-]}
-                      layout="horizontal"
-                      margin={{ top: 5, right: 50, left: 70, bottom: 5 }}
-                    >
-                      <CartesianGrid strokeDasharray="3 3" opacity={0.1} />
-                      <XAxis
-                        type="number"
-                        domain={[0, 50]}
-                        tick={{ fontSize: 10 }}
-                        tickLine={false}
-                        axisLine={false}
-                      />
-                      <YAxis
-                        dataKey="name"
-                        type="category"
-                        tickLine={false}
-                        tickMargin={8}
-                        axisLine={false}
-                        tick={{ fontSize: 11 }}
-                      />
-                      <Tooltip
-                        cursor={false}
-                        contentStyle={{
-                          backgroundColor: 'hsl(var(--popover))',
-                          border: '1px solid hsl(var(--border))',
-                          borderRadius: '6px',
-                        }}
-                        formatter={(value: any) => [`${value} pedidos`, 'Cantidad']}
-                      />
-                      <Bar
-                        dataKey="value"
-                        fill="#FF6B35"
-                        radius={[0, 4, 4, 0]}
-                        barSize={25}
-                      >
-                        <LabelList
-                          dataKey="value"
-                          position="right"
-                          offset={8}
-                          className="fill-foreground"
-                          fontSize={11}
-                        />
-                      </Bar>
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
+              <Card className="p-4">
+                <CardHeader className="pb-3 px-0 pt-0">
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-sm font-medium">Categorías Populares</CardTitle>
+                    <Button variant="ghost" size="sm" className="h-6 text-xs">
+                      <Coffee className="h-3 w-3" />
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent className="px-0 pb-0 pt-0">
+                  <div className="space-y-3">
+                    {/* Datos de prueba actualizados */}
+                    {[
+                      { name: "Tacos al Pastor", value: 156, trend: "+12%", icon: "🌮" },
+                      { name: "Bebidas", value: 98, trend: "+8%", icon: "🥤" },
+                      { name: "Salsas", value: 76, trend: "+5%", icon: "🌶️" },
+                      { name: "Postres", value: 54, trend: "+22%", icon: "🧁" }
+                    ].map((categoria, index) => (
+                      <div key={index} className="flex items-center justify-between p-2 rounded-lg hover:bg-muted/50 transition-colors">
+                        <div className="flex items-center gap-3">
+                          <div className="flex items-center justify-center w-8 h-8 rounded-md bg-muted">
+                            <span className="text-sm">{categoria.icon}</span>
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium">{categoria.name}</p>
+                            <p className="text-xs text-muted-foreground">{categoria.value} pedidos</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-medium text-black dark:text-white">
+                            {categoria.trend}
+                          </span>
+                          <div className="w-16 h-2 bg-muted rounded-full overflow-hidden">
+                            <div
+                              className="h-full bg-gradient-to-r from-orange-500 to-orange-400 transition-all duration-500"
+                              style={{
+                                width: `${Math.min((categoria.value / 156) * 100, 100)}%`
+                              }}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
               </Card>
+
+              
             </div>
 
             {/* Horarios Pico y Últimos Pedidos */}

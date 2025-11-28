@@ -319,121 +319,157 @@ export default function ResponsiveSidebar({ children }: { children: React.ReactN
 
           <div className="relative z-10 space-y-3">
             {/* Botón de tema */}
-            <button
-              onClick={handleThemeToggle}
+            <div
               className={cn(
-                "relative group flex items-center justify-between w-full h-12 px-4 rounded-xl",
-                "transition-all duration-300 border cursor-pointer",
-                "border-gray-200 dark:border-black",
-                "bg-white dark:bg-black"
+                "relative group w-full h-12 rounded-xl transition-all duration-300 overflow-hidden flex items-center px-4 cursor-pointer",
+                "hover:bg-gradient-to-r hover:from-black/5 hover:to-transparent"
               )}
+              style={{
+                background: 'transparent',
+              }}
+              onClick={handleThemeToggle}
               title="Cambiar tema"
-              type="button"
             >
-              <div className="flex items-center gap-3">
-                <div className={cn(
-                  "p-2 rounded-lg group-hover:scale-110 transition-all duration-300",
-                  isComidaRoute
-                    ? "bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 group-hover:bg-orange-200 dark:group-hover:bg-orange-900/50"
-                    : "bg-teal-100 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 group-hover:bg-teal-200 dark:group-hover:bg-teal-900/50"
-                )}>
-                  <Sparkles className="h-4 w-4" />
-                </div>
-                <div className="flex flex-col">
-                  <span className={cn(
-                    "text-sm font-semibold transition-colors duration-300",
-                    isComidaRoute
-                      ? "text-orange-600 dark:text-orange-400"
-                      : "text-teal-600 dark:text-teal-400"
-                  )}>
-                    Tema
-                  </span>
-                  <span className="text-[8px] text-muted-foreground">
-                    {mounted ? (
-                      (theme || (document.documentElement.classList.contains('dark') ? 'dark' : 'light')) === "light"
-                      ? "Claro"
-                      : "Oscuro"
-                    ) : "Cargando..."}
-                  </span>
-                </div>
-              </div>
-              <div className="flex items-center justify-center w-8 h-8">
-                {mounted ? (
-                  <div className="relative">
-                    {(theme || (document.documentElement.classList.contains('dark') ? 'dark' : 'light')) === "light" ? (
-                      <svg className={cn(
-                        "h-4 w-4",
-                        isComidaRoute
-                          ? "text-orange-600 dark:text-orange-400"
-                          : "text-teal-600 dark:text-teal-400"
-                      )} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-                      </svg>
-                    ) : (
-                      <svg className={cn(
-                        "h-4 w-4",
-                        isComidaRoute
-                          ? "text-orange-600 dark:text-orange-400"
-                          : "text-teal-600 dark:text-teal-400"
-                      )} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                      </svg>
-                    )}
+              {/* Efecto de fondo animado */}
+              <div
+                className="absolute inset-0 opacity-0 group-hover:opacity-30 transition-opacity duration-700"
+                style={{
+                  background: `linear-gradient(to right, transparent, ${getAgentColor()}10, transparent)`,
+                  transform: 'translateX(-100%)',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translateX(100%)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateX(-100%)';
+                }}
+              />
+
+              {/* Contenido */}
+              <div className="relative z-10 flex items-center justify-between w-full">
+                <div className="flex items-center gap-3">
+                  <div
+                    className="p-2 rounded-lg transition-all duration-300 group-hover:scale-110"
+                    style={{
+                      backgroundColor: `${getAgentColor()}10`,
+                      color: getAgentColor(),
+                    }}
+                  >
+                    <Sparkles className="h-4 w-4" />
                   </div>
-                ) : (
-                  <div className={cn(
-                    "h-4 w-4 rounded-full animate-pulse",
-                    isComidaRoute
-                      ? "bg-orange-200 dark:bg-orange-800"
-                      : "bg-teal-200 dark:bg-teal-800"
-                  )}></div>
-                )}
+                  <div className="flex flex-col">
+                    <span
+                      className="text-sm font-semibold transition-all duration-300 text-black dark:text-white"
+                    >
+                      Tema
+                    </span>
+                    <span className="text-[8px] text-muted-foreground">
+                      {mounted ? (
+                        (theme || (document.documentElement.classList.contains('dark') ? 'dark' : 'light')) === "light"
+                        ? "Claro"
+                        : "Oscuro"
+                      ) : "Cargando..."}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Icono de estado del tema */}
+                <div className="flex items-center justify-center w-8 h-8">
+                  {mounted ? (
+                    <div className="relative">
+                      {(theme || (document.documentElement.classList.contains('dark') ? 'dark' : 'light')) === "light" ? (
+                        <svg
+                          className="h-4 w-4"
+                          style={{ color: getAgentColor() }}
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                        </svg>
+                      ) : (
+                        <svg
+                          className="h-4 w-4"
+                          style={{ color: getAgentColor() }}
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                        </svg>
+                      )}
+                    </div>
+                  ) : (
+                    <div
+                      className="h-4 w-4 rounded-full animate-pulse"
+                      style={{ backgroundColor: `${getAgentColor()}33` }}
+                    ></div>
+                  )}
+                </div>
               </div>
-            </button>
+            </div>
 
             {/* Botón de salir */}
-            <button
-              onClick={handleLogout}
+            <div
               className={cn(
-                "relative group flex items-center justify-between w-full h-12 px-4 rounded-xl",
-                "transition-all duration-300 border cursor-pointer",
-                "border-gray-200 dark:border-black",
-                "bg-white dark:bg-black"
+                "relative group w-full h-12 rounded-xl transition-all duration-300 overflow-hidden flex items-center px-4 cursor-pointer",
+                "hover:bg-gradient-to-r hover:from-black/5 hover:to-transparent"
               )}
+              style={{
+                background: 'transparent',
+              }}
+              onClick={handleLogout}
               title="Salir del dashboard"
             >
-              <div className="flex items-center gap-3">
-                <div className={cn(
-                  "p-2 rounded-lg group-hover:scale-110 transition-all duration-300",
-                  isComidaRoute
-                    ? "bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 group-hover:bg-orange-200 dark:group-hover:bg-orange-900/50"
-                    : "bg-teal-100 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 group-hover:bg-teal-200 dark:group-hover:bg-teal-900/50"
-                )}>
-                  <LogOut className="h-4 w-4" />
-                </div>
-                <div className="flex flex-col">
-                  <span className={cn(
-                    "text-sm font-semibold transition-colors duration-300",
-                    isComidaRoute
-                      ? "text-orange-600 dark:text-orange-400"
-                      : "text-teal-600 dark:text-teal-400"
-                  )}>
-                    Salir
-                  </span>
-                  <span className="text-[8px] text-muted-foreground">
-                    Volver al inicio
-                  </span>
-                </div>
-              </div>
-              <ChevronRight
-                className={cn(
-                  "h-4 w-4 transition-all duration-300 opacity-60 group-hover:opacity-100",
-                  isComidaRoute
-                    ? "text-orange-600 dark:text-orange-400"
-                    : "text-teal-600 dark:text-teal-400"
-                )}
+              {/* Efecto de fondo animado */}
+              <div
+                className="absolute inset-0 opacity-0 group-hover:opacity-30 transition-opacity duration-700"
+                style={{
+                  background: `linear-gradient(to right, transparent, ${getAgentColor()}10, transparent)`,
+                  transform: 'translateX(-100%)',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translateX(100%)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateX(-100%)';
+                }}
               />
-            </button>
+
+              {/* Contenido */}
+              <div className="relative z-10 flex items-center justify-between w-full">
+                <div className="flex items-center gap-3">
+                  <div
+                    className="p-2 rounded-lg transition-all duration-300 group-hover:scale-110"
+                    style={{
+                      backgroundColor: `${getAgentColor()}10`,
+                      color: getAgentColor(),
+                    }}
+                  >
+                    <LogOut className="h-4 w-4" />
+                  </div>
+                  <div className="flex flex-col">
+                    <span
+                      className="text-sm font-semibold transition-all duration-300 text-black dark:text-white"
+                    >
+                      Salir
+                    </span>
+                    <span className="text-[8px] text-muted-foreground">
+                      Volver al inicio
+                    </span>
+                  </div>
+                </div>
+
+                {/* Flecha indicadora */}
+                <ChevronRight
+                  className="h-4 w-4 transition-all duration-300 opacity-0 group-hover:opacity-100"
+                  style={{
+                    color: getAgentColor(),
+                    transform: 'translateX(8px)',
+                  }}
+                />
+              </div>
+            </div>
 
             {/* Info de versión */}
             <div className="mt-3 text-center">

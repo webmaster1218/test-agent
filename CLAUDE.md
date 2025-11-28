@@ -29,6 +29,8 @@ npm run typecheck              # TypeScript type checking
 - Security headers are configured for production deployment
 - All components use TypeScript with strict type checking
 - **Vercel Environment Variables Required**: For deployment, configure NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in Vercel dashboard
+- **shadcn/ui Configuration**: Uses CSS variables with slate base color and TypeScript support
+- **Package Optimization**: Optimized imports for @radix-ui/react-icons, lucide-react, recharts
 
 ## Authentication & Access
 
@@ -89,20 +91,30 @@ Authentication sessions are managed via sessionStorage with 24-hour expiration. 
 - **Food Agent**: `https://n8n.vivefelizsindolor.com/webhook/ff3f992e-bf39-432a-9dad-05ce3ec14d26`
 
 #### Configuration Files
-- **`src/lib/config/constants.ts`**: Webhook URLs and application config
+- **`src/lib/config/constants.ts`**: Webhook URLs and application config including complex WebhookPayload interface
 - **`src/lib/config/themes.ts`**: Agent-specific color themes with plasma effects
 - **`src/lib/types.ts`**: Minimal TypeScript interfaces (Message interface)
-- **`src/lib/auth.ts`**: Authentication utilities and session management
+- **`src/lib/auth.ts`**: Authentication utilities and session management with AdminCredentials interface
+- **`src/lib/supabase.ts`**: Supabase client integration with graceful fallback and ConfiguracionAgente interface
+- **`src/lib/pedidos-utils.ts`**: Order processing utilities for food agent with Medellín commune mapping and geographic data analysis
 - **`src/app/actions.ts`**: Server-side sentiment analysis using Spanish keywords
 
 ### Key Technical Details
 
-#### Webhook Payload Structure
+#### Webhook Payload Structure (`src/lib/config/constants.ts:14-81`)
 Complex payload mimicking browser requests with:
 - Full browser headers (user-agent, accept headers, etc.)
-- Conversation and message ID management
+- Nested body structure with conversation and message ID management
 - Timestamp handling with ISO format
 - Response parsing for multiple data formats (JSON arrays/objects)
+
+#### Authentication System (`src/lib/auth.ts:1-104`)
+Hardcoded credential system with:
+- AdminCredentials interface and ADMIN_CREDENTIALS constant
+- Session keys per dashboard type (salud/comida)
+- sessionStorage management with 24-hour expiration
+- Authentication validation and redirect utilities
+- Login/logout functionality per dashboard
 
 #### Message Processing Pipeline
 1. User input → localStorage persistence (`chat_messages_${agentId}`)
@@ -117,6 +129,13 @@ Complex payload mimicking browser requests with:
 - Time-based metrics calculation (response times, conversation duration)
 - Date range filtering with Spanish locale (date-fns with `es` locale)
 - Export functionality with html2canvas and jsPDF for PDF generation
+
+#### Supabase Integration (`src/lib/supabase.ts:1-161`)
+- **Graceful Fallback**: Application works without Supabase credentials (development mode)
+- **Configuration Storage**: Agent settings stored in `configuraciones_agentes` table
+- **Type-safe**: Full TypeScript interfaces (ConfiguracionAgente, ConfiguracionRow)
+- **Error Handling**: Comprehensive error logging and fallback mechanisms
+- **CRUD Operations**: getConfiguracionAgente() and saveConfiguracionAgente() functions
 
 #### State Management Patterns
 - Agent selection persisted to localStorage
@@ -138,7 +157,7 @@ Complex payload mimicking browser requests with:
 
 #### Agent System
 - **Health Agent (salud)**: Medical assistance, appointment scheduling, symptom-based recommendations
-- **Food Agent (comida)**: Restaurant menu, recommendations, order taking
+- **Food Agent (comida)**: Restaurant menu, recommendations, order taking with geographic order analysis by Medellín communes
 - **Extensible Design**: Easy to add new agents with custom themes and webhook endpoints
 - **Agent Routing**: Separate login pages and dashboards per agent type
 
@@ -166,10 +185,11 @@ Complex payload mimicking browser requests with:
 - **`/src/components/ui/`**: shadcn/ui component library (37+ components)
 - **`/src/components/charts/`**: Custom chart components for dashboard analytics
 - **`/src/components/dashboard-*`**: Analytics dashboard components with real-time data
-- **`/src/lib/`**: Configuration, utilities, authentication, types, and constants
+- **`/src/lib/`**: Configuration, utilities, authentication, types, Supabase integration, and constants
 
 ### Key Configuration Files
-- **`components.json`**: shadcn/ui configuration with CSS variables and TypeScript
-- **`tailwind.config.ts`**: Tailwind CSS setup with custom animations and agent themes
-- **`next.config.ts`**: Build optimization, security headers, and image patterns
+- **`components.json`**: shadcn/ui configuration with CSS variables, TypeScript support, and path aliases
+- **`tailwind.config.js`**: Tailwind CSS setup with custom animations and agent themes
+- **`next.config.ts`**: Build optimization, security headers, image patterns, and Turbopack configuration
 - **`tsconfig.json`**: TypeScript configuration with Next.js paths
+- **`Package Dependencies**: Includes Zustand for state management, date-fns for Spanish locale, html2canvas + jsPDF for PDF export, OGL for WebGL effects

@@ -45,7 +45,20 @@
       "Bash(cp:*)",
       "mcp__shadcn__get_add_command_for_items",
       "Bash(git config:*)",
-      "Bash(git remote set-url:*)"
+      "Bash(git remote set-url:*)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:www.medellin.gov.co)",
+      "WebFetch(domain:medata.gov.co)",
+      "WebFetch(domain:www.dane.gov.co)",
+      "WebFetch(domain:geoportal.dane.gov.co)",
+      "WebFetch(domain:datos.gov.co)",
+      "WebFetch(domain:www.ideam.gov.co)",
+      "WebFetch(domain:www.openstreetmap.org)",
+      "WebFetch(domain:overpass-turbo.eu)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:gist.github.com)",
+      "WebFetch(domain:gist.githubusercontent.com)",
+      "Bash(find:*)"
     ],
     "deny": [],
     "ask": []
