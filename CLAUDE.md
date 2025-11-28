@@ -21,6 +21,28 @@ npm run lint:fix               # Run ESLint with auto-fix
 npm run typecheck              # TypeScript type checking
 ```
 
+### Webhook Testing Commands
+```bash
+# Test n8n webhooks (requires curl or similar)
+curl -X POST https://n8n.srv1054162.hstgr.cloud/webhook/29aad504-0017-47b9-b2b5-57800b5649f8 \
+  -H "Content-Type: application/json" \
+  -d '{"message": "test message", "conversationId": "test", "messageId": "test"}'
+```
+
+## Environment Setup
+
+### Required Environment Variables
+For development and deployment, configure these variables in your environment or Vercel dashboard:
+- `NEXT_PUBLIC_SUPABASE_URL`: Supabase project URL
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`: Supabase anonymous key
+
+**Note**: The application gracefully handles missing Supabase credentials and works in development mode without them.
+
+### Local Development
+1. Copy `.env.example` to `.env.local` and configure Supabase variables
+2. Run `npm install` to install dependencies
+3. Run `npm run dev` to start development server on port 3000
+
 ## Development Notes
 
 - Build errors are ignored for deployment (TypeScript and ESLint configured in next.config.ts)
@@ -86,12 +108,14 @@ Authentication sessions are managed via sessionStorage with 24-hour expiration. 
 ### External Integrations
 
 #### n8n Webhooks
-- **Dashboard Analytics**: `https://n8n.vivefelizsindolor.com/webhook/dda6a613-7df4-4c2c-86d9-ad213a155c9c`
-- **Health Agent**: `https://n8n.srv1054162.hstgr.cloud/webhook/564531df-e16b-40e4-8e1c-522aa0529631`
-- **Food Agent**: `https://n8n.vivefelizsindolor.com/webhook/ff3f992e-bf39-432a-9dad-05ce3ec14d26`
+- **Health Agent**: `https://n8n.srv1054162.hstgr.cloud/webhook/29aad504-0017-47b9-b2b5-57800b5649f8`
+- **Food Agent**: `https://n8n.srv1054162.hstgr.cloud/webhook/ff3f992e-bf39-432a-9dad-05ce3ec14d26`
+
+**Configuration Location**: Webhook URLs are defined in `src/lib/config/constants.ts` and `src/lib/constants.ts`
 
 #### Configuration Files
-- **`src/lib/config/constants.ts`**: Webhook URLs and application config including complex WebhookPayload interface
+- **`src/lib/config/constants.ts`**: Application configuration (APP_CONFIG, WEBHOOK_CONFIG, CHAT_CONFIG)
+- **`src/lib/constants.ts`**: Webhook URLs and complex WebhookPayload interface for n8n integration
 - **`src/lib/config/themes.ts`**: Agent-specific color themes with plasma effects
 - **`src/lib/types.ts`**: Minimal TypeScript interfaces (Message interface)
 - **`src/lib/auth.ts`**: Authentication utilities and session management with AdminCredentials interface
@@ -101,12 +125,13 @@ Authentication sessions are managed via sessionStorage with 24-hour expiration. 
 
 ### Key Technical Details
 
-#### Webhook Payload Structure (`src/lib/config/constants.ts:14-81`)
+#### Webhook Payload Structure (`src/lib/constants.ts:14-81`)
 Complex payload mimicking browser requests with:
 - Full browser headers (user-agent, accept headers, etc.)
 - Nested body structure with conversation and message ID management
 - Timestamp handling with ISO format
 - Response parsing for multiple data formats (JSON arrays/objects)
+- WebhookPayload interface for type-safe request handling
 
 #### Authentication System (`src/lib/auth.ts:1-104`)
 Hardcoded credential system with:
@@ -116,12 +141,13 @@ Hardcoded credential system with:
 - Authentication validation and redirect utilities
 - Login/logout functionality per dashboard
 
-#### Message Processing Pipeline
-1. User input → localStorage persistence (`chat_messages_${agentId}`)
-2. Webhook POST with complex payload structure mimicking browser headers
-3. Response parsing with JSON extraction for text and images
-4. Google Drive URL conversion (drive.google.com → lh3.googleusercontent.com)
-5. Display with formatted timestamps and typing indicators
+#### Message Processing Pipeline (`src/components/chat/Chat.tsx`)
+1. **Input**: User message stored to localStorage with agent-specific key (`chat_messages_${agentId}`)
+2. **Webhook Call**: POST to agent-specific n8n endpoint with complex browser-mimicking payload
+3. **Response Processing**: JSON parsing for multiple data formats (text, images, arrays, objects)
+4. **Image Handling**: Google Drive URL conversion (drive.google.com → lh3.googleusercontent.com)
+5. **Display**: Formatted timestamps, typing indicators, and message persistence
+6. **State Management**: Conversation IDs and message IDs managed per agent session
 
 #### Data Processing for Dashboard
 - Raw webhook data → normalized conversation/appointment records (dual-table system)
@@ -144,16 +170,28 @@ Hardcoded credential system with:
 - Theme switching with smooth CSS transitions
 - Authentication sessions in sessionStorage per dashboard type
 
+### Build & Deployment Configuration
+
+#### Next.js Configuration (`next.config.ts`)
+- **Turbopack**: Enabled for faster development builds
+- **Build Error Handling**: TypeScript and ESLint errors ignored for deployment
+- **Package Optimization**: Optimized imports for @radix-ui/react-icons, lucide-react, recharts
+- **Security Headers**: X-Frame-Options, X-Content-Type-Options, Referrer-Policy configured
+- **Image Optimization**: Remote patterns for Google Drive (lh3.googleusercontent.com, drive.google.com) and n8n domains
+
+#### Deployment Notes
+- Application builds successfully despite TypeScript errors (intentionally configured)
+- Uses experimental package optimization for better performance
+- Security headers applied in production environment
+- Image optimization configured for external services (Google Drive, n8n)
+
 ### Development Notes
 
-#### Configuration Features
-- **Turbopack**: Enabled for faster development builds
-- **Build Optimization**: Package imports optimization for @radix-ui/react-icons, lucide-react, recharts
-- **Security Headers**: Custom headers for production (X-Frame-Options, X-Content-Type-Options, Referrer-Policy)
-- **Image Optimization**: Remote patterns for Google Drive (lh3.googleusercontent.com, drive.google.com) and n8n domains
-- **ESLint/TypeScript**: Build errors ignored for deployment (configured in next.config.ts)
-- **shadcn/ui**: Configured with CSS variables, slate base color, TypeScript support
-- **Component Library**: 37+ shadcn/ui components including charts, forms, data display components
+#### Component Architecture
+- **shadcn/ui**: Complete component library with 37+ components, CSS variables, slate base color, TypeScript support
+- **Components Location**: All UI components in `/src/components/ui/`, charts in `/src/components/charts/`, dashboard components in `/src/components/dashboard-*`
+- **Component Configuration**: `components.json` configures shadcn/ui with path aliases (`@/components`, `@/lib/utils`)
+- **Tailwind CSS**: Custom animations, agent themes, and complete design system configured in `tailwind.config.js`
 
 #### Agent System
 - **Health Agent (salud)**: Medical assistance, appointment scheduling, symptom-based recommendations
@@ -166,6 +204,26 @@ Hardcoded credential system with:
 - Large datasets in dashboard require efficient filtering and pagination
 - Image loading from Google Drive needs error handling and fallback URLs
 - Authentication sessions expire after 24 hours for security
+
+## Key Architecture Concepts
+
+### Multi-Agent System
+- **Agent Types**: Health (salud) and Food (comida) agents with independent webhook endpoints
+- **Agent Routing**: URL structure supports both generic and agent-specific routes (/login/[agent], /dashboard/[agent], etc.)
+- **Theme System**: Dynamic CSS theming per agent (Salud: blue #2C8082, Comida: orange #FF6B35)
+- **State Isolation**: Each agent maintains separate localStorage keys, sessions, and conversation IDs
+
+### Data Flow Architecture
+1. **Frontend Input** → localStorage persistence → webhook call to n8n
+2. **n8n Processing** → webhook response → JSON parsing and display
+3. **Dashboard Analytics** → real-time n8n data fetching → sentiment analysis → visualization
+4. **Configuration** → Supabase storage (optional) → local fallbacks → graceful degradation
+
+### Performance & Optimization
+- **Turbopack**: Faster development builds with `npm run dev:turbopack`
+- **Package Optimization**: Optimized imports for UI libraries (@radix-ui, lucide-react, recharts)
+- **Build Configuration**: TypeScript/ESLint errors ignored for deployment reliability
+- **WebGL Effects**: OGL library for plasma backgrounds with performance considerations
 
 ## Project Structure
 

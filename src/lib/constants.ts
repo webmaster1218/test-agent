@@ -1,6 +1,6 @@
 export const WEBHOOK_CONFIG = {
-  salud: 'https://n8n.srv1054162.hstgr.cloud/webhook/564531df-e16b-40e4-8e1c-522aa0529631',
-  comida: 'https://n8n.vivefelizsindolor.com/webhook/ff3f992e-bf39-432a-9dad-05ce3ec14d26',
+  salud: 'https://n8n.srv1054162.hstgr.cloud/webhook/29aad504-0017-47b9-b2b5-57800b5649f8',
+  comida: 'https://n8n.srv1054162.hstgr.cloud/webhook/ff3f992e-bf39-432a-9dad-05ce3ec14d26',
 } as const;
 
 export const CHAT_CONFIG = {
