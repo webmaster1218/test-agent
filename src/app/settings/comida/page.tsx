@@ -60,14 +60,13 @@ export default function SettingsComidaPage() {
     <div className="min-h-screen bg-background p-4 md:p-6 lg:p-8">
       <ScrollArea className="h-full">
         <div className="max-w-7xl mx-auto space-y-6">
-  
+
           {/* Alerta de estado */}
           {saveStatus !== 'idle' && (
-            <Alert className={`border-2 ${
-              saveStatus === 'saved' ? 'border-[#FF6B35]/50 bg-[#FF6B35]/10' :
-              saveStatus === 'saving' ? 'border-blue-500/50 bg-blue-500/10' :
-              'border-red-500/50 bg-red-500/10'
-            }`}>
+            <Alert className={`border-2 ${saveStatus === 'saved' ? 'border-[#FF6B35]/50 bg-[#FF6B35]/10' :
+                saveStatus === 'saving' ? 'border-blue-500/50 bg-blue-500/10' :
+                  'border-red-500/50 bg-red-500/10'
+              }`}>
               {saveStatus === 'saving' && (
                 <>
                   <AlertCircle className="h-4 w-4 animate-spin text-blue-600" />
@@ -104,53 +103,53 @@ export default function SettingsComidaPage() {
 
             {/* Controles */}
             <div className="flex flex-col sm:flex-row gap-2">
-            <Dialog open={showSaveDialog} onOpenChange={setShowSaveDialog}>
-              <DialogTrigger asChild>
-                <Button
-                  size="lg"
-                  className="bg-gradient-to-r from-[#FF6B35] to-[#FF8C42] hover:from-[#FF8C42] hover:to-[#FF6B35] shadow-lg"
-                >
-                  <Save className="mr-2 h-4 w-4" />
-                  Guardar Cambios
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Confirmar cambios</DialogTitle>
-                  <DialogDescription>
-                    ¿Guardar todos los cambios en la configuración del agente de comida?
-                  </DialogDescription>
-                </DialogHeader>
-                <DialogFooter>
-                  <Button variant="outline" onClick={() => setShowSaveDialog(false)}>
-                    Cancelar
-                  </Button>
+              <Dialog open={showSaveDialog} onOpenChange={setShowSaveDialog}>
+                <DialogTrigger asChild>
                   <Button
-                    onClick={() => {
-                      setShowSaveDialog(false);
-                      handleSave();
-                    }}
-                    className="bg-gradient-to-r from-[#FF6B35] to-[#FF8C42]"
+                    size="lg"
+                    className="bg-gradient-to-r from-[#FF6B35] to-[#FF8C42] hover:from-[#FF8C42] hover:to-[#FF6B35] shadow-lg"
                   >
-                    Confirmar y Guardar
+                    <Save className="mr-2 h-4 w-4" />
+                    Guardar Cambios
                   </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Confirmar cambios</DialogTitle>
+                    <DialogDescription>
+                      ¿Guardar todos los cambios en la configuración del agente de comida?
+                    </DialogDescription>
+                  </DialogHeader>
+                  <DialogFooter>
+                    <Button variant="outline" onClick={() => setShowSaveDialog(false)}>
+                      Cancelar
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        setShowSaveDialog(false);
+                        handleSave();
+                      }}
+                      className="bg-gradient-to-r from-[#FF6B35] to-[#FF8C42]"
+                    >
+                      Confirmar y Guardar
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
             </div>
           </header>
 
           <Tabs defaultValue="agent" className="space-y-6">
-          <TabsList className="grid w-48 grid-cols-2">
-            <TabsTrigger value="agent" className="flex items-center gap-2">
-              <Bot className="h-4 w-4" />
-              Agente
-            </TabsTrigger>
-            <TabsTrigger value="business" className="flex items-center gap-2">
-              <Store className="h-4 w-4" />
-              Negocio
-            </TabsTrigger>
-          </TabsList>
+            <TabsList className="grid w-48 grid-cols-2">
+              <TabsTrigger value="agent" className="flex items-center gap-2">
+                <Bot className="h-4 w-4" />
+                Agente
+              </TabsTrigger>
+              <TabsTrigger value="business" className="flex items-center gap-2">
+                <Store className="h-4 w-4" />
+                Negocio
+              </TabsTrigger>
+            </TabsList>
 
             {/* Pestaña de Configuración del Agente */}
             <TabsContent value="agent" className="mt-8 space-y-8">
@@ -171,7 +170,7 @@ export default function SettingsComidaPage() {
                       <Label htmlFor="agent-name" className="text-[#FF6B35] font-medium">Nombre</Label>
                       <Input
                         id="agent-name"
-                        defaultValue="Marcos Comida"
+                        defaultValue="FABRICA DE WINNERS"
                         className="border-[#FF6B35]/20 focus:border-[#FF6B35] focus:ring-[#FF6B35]/20"
                       />
                     </div>

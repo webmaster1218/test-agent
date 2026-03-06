@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Marcos Chat Studio",
+  title: "FABRICA DE WINNERS",
   description: "Plataforma de chat y analytics con asistente virtual",
 };
 

@@ -1,6 +1,8 @@
 'use client';
 
 import * as React from 'react';
+import Link from 'next/link';
+import { ChevronRight } from 'lucide-react';
 import { ThemeProvider } from '@/components/theme-provider';
 import ResponsiveSidebar from '@/components/responsive-sidebar';
 

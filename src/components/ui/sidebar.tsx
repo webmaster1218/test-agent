@@ -4,8 +4,8 @@ import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { VariantProps, cva } from "class-variance-authority"
 import { PanelLeft } from "lucide-react"
-
 import { cn } from "@/lib/utils"
+import { useIsMobile } from "@/hooks/use-mobile"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
@@ -609,7 +609,7 @@ const SidebarMenuAction = React.forwardRef<
         "peer-data-[size=lg]/menu-button:top-2.5",
         "group-data-[collapsible=icon]:hidden",
         showOnHover &&
-          "group-focus-within/menu-item:opacity-100 group-hover/menu-item:opacity-100 data-[state=open]:opacity-100 peer-data-[active=true]/menu-button:text-sidebar-accent-foreground md:opacity-0",
+        "group-focus-within/menu-item:opacity-100 group-hover/menu-item:opacity-100 data-[state=open]:opacity-100 peer-data-[active=true]/menu-button:text-sidebar-accent-foreground md:opacity-0",
         className
       )}
       {...props}
@@ -731,31 +731,6 @@ const SidebarMenuSubButton = React.forwardRef<
 SidebarMenuSubButton.displayName = "SidebarMenuSubButton"
 
 // EXPORTS
-const SidebarProvider = SidebarProvider
-const Sidebar = Sidebar
-const SidebarTrigger = SidebarTrigger
-const SidebarRail = SidebarRail
-const SidebarInset = SidebarInset
-const SidebarInput = SidebarInput
-const SidebarHeader = SidebarHeader
-const SidebarFooter = SidebarFooter
-const SidebarSeparator = SidebarSeparator
-const SidebarContent = SidebarContent
-
-const SidebarGroup = SidebarGroup
-const SidebarGroupLabel = SidebarGroupLabel
-const SidebarGroupAction = SidebarGroupAction
-const SidebarGroupContent = SidebarGroupContent
-
-const SidebarMenu = SidebarMenu
-const SidebarMenuItem = SidebarMenuItem
-const SidebarMenuButton = SidebarMenuButton
-const SidebarMenuAction = SidebarMenuAction
-const SidebarMenuBadge = SidebarMenuBadge
-const SidebarMenuSkeleton = SidebarMenuSkeleton
-const SidebarMenuSub = SidebarMenuSub
-const SidebarMenuSubItem = SidebarMenuSubItem
-const SidebarMenuSubButton = SidebarMenuSubButton
 
 export {
   Sidebar,

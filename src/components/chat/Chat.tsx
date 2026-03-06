@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import { AgentTheme } from '@/lib/config/themes';
 import { WEBHOOK_CONFIG } from '@/lib/config/constants';
+import { cn } from '@/lib/utils';
 
 // Función para convertir URLs de Google Drive a formato de visualización directa
 function getGoogleDriveDirectUrl(url: string): string {
@@ -32,8 +33,8 @@ function getGoogleDriveDirectUrl(url: string): string {
 }
 
 // Función para parsear JSON dentro de texto
-function parseJsonFromText(text: string): { text: string, images: Array<{url: string, alt?: string}> } {
-  const images: Array<{url: string, alt?: string}> = [];
+function parseJsonFromText(text: string): { text: string, images: Array<{ url: string, alt?: string }> } {
+  const images: Array<{ url: string, alt?: string }> = [];
   let cleanText = text;
 
   try {
@@ -123,7 +124,7 @@ export default function Chat({ selectedAgent, theme }: ChatProps) {
   }, [messages, selectedAgent]);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   };
 
   useEffect(() => {
@@ -148,17 +149,17 @@ export default function Chat({ selectedAgent, theme }: ChatProps) {
   };
 
   const formatMessageWithLineBreaks = (text: string) => {
-  return text.split('\n').map((line, index) => (
-    <span key={index}>
-      {line}
-      {index < text.split('\n').length - 1 && <br />}
-    </span>
-  ));
-};
+    return text.split('\n').map((line, index) => (
+      <span key={index}>
+        {line}
+        {index < text.split('\n').length - 1 && <br />}
+      </span>
+    ));
+  };
 
-const sendToWebhook = async (message: string, webhookUrl: string) => {
+  const sendToWebhook = async (message: string, webhookUrl: string) => {
     const conversationId = localStorage.getItem(`conversationId_${selectedAgent}`) ||
-                          `bdc41d22-a72b-47cf-b1ad-6d6a1e8fe13d-${Date.now()}`;
+      `bdc41d22-a72b-47cf-b1ad-6d6a1e8fe13d-${Date.now()}`;
 
     if (!localStorage.getItem(`conversationId_${selectedAgent}`)) {
       localStorage.setItem(`conversationId_${selectedAgent}`, conversationId);
@@ -228,17 +229,17 @@ const sendToWebhook = async (message: string, webhookUrl: string) => {
     }
 
     let responseText = '';
-    let images: Array<{url: string, alt?: string}> = [];
+    let images: Array<{ url: string, alt?: string }> = [];
 
     if (Array.isArray(responseData) && responseData.length > 0) {
       const webhookResponse = responseData[0];
       const rawResponseText = webhookResponse.reply ||
-                           webhookResponse.response?.message ||
-                           webhookResponse.body?.response ||
-                           webhookResponse.body?.message ||
-                           webhookResponse.output ||
-                           webhookResponse.message ||
-                           '';
+        webhookResponse.response?.message ||
+        webhookResponse.body?.response ||
+        webhookResponse.body?.message ||
+        webhookResponse.output ||
+        webhookResponse.message ||
+        '';
 
       // Intentar parsear JSON dentro del texto de respuesta
       const { text: cleanText, images: extractedImages } = parseJsonFromText(rawResponseText);
@@ -248,14 +249,14 @@ const sendToWebhook = async (message: string, webhookUrl: string) => {
       // Soportar múltiples formatos de imágenes (prioridad baja si ya se extrajo del JSON)
       if (images.length === 0) {
         const imagesData = webhookResponse.images ||
-                          webhookResponse.response?.images ||
-                          webhookResponse.body?.images ||
-                          [];
+          webhookResponse.response?.images ||
+          webhookResponse.body?.images ||
+          [];
 
         const singleImageUrl = webhookResponse.imageUrl ||
-                             webhookResponse.response?.imageUrl ||
-                             webhookResponse.body?.imageUrl ||
-                             '';
+          webhookResponse.response?.imageUrl ||
+          webhookResponse.body?.imageUrl ||
+          '';
 
         if (imagesData && Array.isArray(imagesData)) {
           images = imagesData.map((img: { url?: string; imageUrl?: string; alt?: string; imageAlt?: string }) => ({
@@ -266,22 +267,22 @@ const sendToWebhook = async (message: string, webhookUrl: string) => {
           images = [{
             url: singleImageUrl,
             alt: webhookResponse.imageAlt ||
-                 webhookResponse.response?.imageAlt ||
-                 webhookResponse.body?.imageAlt ||
-                 'Imagen enviada por el agente'
+              webhookResponse.response?.imageAlt ||
+              webhookResponse.body?.imageAlt ||
+              'Imagen enviada por el agente'
           }];
         }
       }
 
     } else if (responseData && typeof responseData === 'object') {
       const rawResponseText = responseData.reply ||
-                           responseData.response?.message ||
-                           responseData.response ||
-                           responseData.body?.response ||
-                           responseData.body?.message ||
-                           responseData.output ||
-                           responseData.message ||
-                           '';
+        responseData.response?.message ||
+        responseData.response ||
+        responseData.body?.response ||
+        responseData.body?.message ||
+        responseData.output ||
+        responseData.message ||
+        '';
 
       // Intentar parsear JSON dentro del texto de respuesta
       const { text: cleanText, images: extractedImages } = parseJsonFromText(rawResponseText);
@@ -291,14 +292,14 @@ const sendToWebhook = async (message: string, webhookUrl: string) => {
       // Soportar múltiples formatos de imágenes (prioridad baja si ya se extrajo del JSON)
       if (images.length === 0) {
         const imagesData = responseData.images ||
-                          responseData.response?.images ||
-                          responseData.body?.images ||
-                          [];
+          responseData.response?.images ||
+          responseData.body?.images ||
+          [];
 
         const singleImageUrl = responseData.imageUrl ||
-                             responseData.response?.imageUrl ||
-                             responseData.body?.imageUrl ||
-                             '';
+          responseData.response?.imageUrl ||
+          responseData.body?.imageUrl ||
+          '';
 
         if (imagesData && Array.isArray(imagesData)) {
           images = imagesData.map((img: { url?: string; imageUrl?: string; alt?: string; imageAlt?: string }) => ({
@@ -309,9 +310,9 @@ const sendToWebhook = async (message: string, webhookUrl: string) => {
           images = [{
             url: singleImageUrl,
             alt: responseData.imageAlt ||
-                 responseData.response?.imageAlt ||
-                 responseData.body?.imageAlt ||
-                 'Imagen enviada por el agente'
+              responseData.response?.imageAlt ||
+              responseData.body?.imageAlt ||
+              'Imagen enviada por el agente'
           }];
         }
       }
@@ -341,7 +342,7 @@ const sendToWebhook = async (message: string, webhookUrl: string) => {
   };
 
   const handleSend = async () => {
-    if (!inputText.trim()) return;
+    if (!inputText.trim() || isBlocked) return;
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -401,28 +402,33 @@ const sendToWebhook = async (message: string, webhookUrl: string) => {
   // Filter messages to show only those for the current agent
   const displayMessages = messages.filter(msg => msg.agentId === selectedAgent);
 
+  const userMessageCount = displayMessages.filter(msg => msg.sender === 'user').length;
+  const isBlocked = userMessageCount >= 10;
+
   return (
-    <div className="flex flex-col max-w-xl w-full mx-auto" style={{ maxHeight: '600px' }}>
-      <div className="flex items-center justify-between mb-4 px-4 pt-4">
-        <h3 className="text-lg font-semibold text-white tracking-tight">
-          Chat de {selectedAgent === 'salud' ? 'Salud' : 'Comida'}
-        </h3>
+    <div className="flex flex-col h-full w-full mx-auto relative z-10">
+      <div className="flex items-center justify-end mb-2 px-4 pt-2 relative z-10">
         <button
           onClick={clearChat}
-          className="text-sm text-white/60 hover:text-white/80 hover:scale-105 transition-all duration-200 px-2 py-1 rounded hover:bg-white/10"
+          className="text-xs font-medium text-white/40 hover:text-white/80 transition-all duration-200 px-3 py-1.5 rounded-full hover:bg-white/5 border border-transparent hover:border-white/10 flex items-center gap-1.5"
         >
-          Limpiar chat
+          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+          Reiniciar
         </button>
       </div>
-      <div className="overflow-y-auto space-y-3 mb-4 px-4 chat-scroll" style={{ maxHeight: '400px' }}>
+      <div className="overflow-y-auto space-y-4 mb-4 px-4 chat-scroll flex-1 relative z-10 min-h-[400px]">
         {displayMessages.length === 0 && (
-          <div className="text-center text-white/60 text-sm py-8">
-            <div className="mb-2">
-              <svg className="w-8 h-8 mx-auto text-white/20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="flex flex-col items-center justify-center h-full pt-12 pb-8">
+            <div
+              className="w-20 h-20 rounded-full flex items-center justify-center mb-6 shadow-2xl animate-pulse"
+              style={{ background: `linear-gradient(135deg, ${theme.primary}20 0%, ${theme.secondary}20 100%)`, border: `1px solid ${theme.primary}40` }}
+            >
+              <svg className="w-10 h-10" style={{ color: theme.primary }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
               </svg>
             </div>
-            Inicia una conversación con el asistente de {selectedAgent === 'salud' ? 'Salud' : 'Comida'}
+            <p className="text-white/80 text-lg font-medium mb-2">Inicia una conversación</p>
+            <p className="text-white/50 text-sm max-w-xs text-center">Habla con el asistente de {selectedAgent === 'salud' ? 'Salud' : 'Comida'} para explorar sus capacidades.</p>
           </div>
         )}
 
@@ -432,15 +438,21 @@ const sendToWebhook = async (message: string, webhookUrl: string) => {
             className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'} animate-fade-in`}
           >
             <div
-              className={`max-w-[80%] px-4 py-2 rounded-lg transition-all duration-200 hover:scale-[1.02] message-bubble ${
-                message.sender === 'user'
-                  ? 'bg-white/35 text-white hover:bg-white/45'
-                  : 'bg-white/20 text-white/90 hover:bg-white/25'
-              }`}
-              style={{
-                boxShadow: message.sender === 'user' ? `0 0 15px ${theme.primary}20` : '0 0 10px rgba(255,255,255,0.1)'
+              className={`relative max-w-[80%] px-5 py-3.5 rounded-2xl transition-all duration-300 hover:scale-[1.01] message-bubble overflow-hidden ${message.sender === 'user'
+                ? 'text-white border border-white/10'
+                : 'bg-white/[0.05] text-white/90 backdrop-blur-xl border border-white/10'
+                }`}
+              style={message.sender === 'user' ? {
+                background: `linear-gradient(135deg, ${theme.primary}30 0%, ${theme.secondary}30 100%)`,
+                boxShadow: `inset 0 0 20px rgba(255,255,255,0.05), 0 10px 30px -10px ${theme.primary}40`,
+                backdropFilter: 'blur(12px)'
+              } : {
+                boxShadow: '0 10px 40px -10px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1)'
               }}
             >
+              {message.sender === 'user' && (
+                <div className="absolute inset-0 bg-gradient-to-tr from-white/5 to-transparent opacity-50 pointer-events-none"></div>
+              )}
               {message.images && message.images.length > 0 && (
                 <div className={`mb-3 ${message.images.length > 1 ? 'space-y-4' : ''}`}>
                   {message.images.map((image, index) => (
@@ -478,7 +490,7 @@ const sendToWebhook = async (message: string, webhookUrl: string) => {
                           }}
                         />
                       </div>
-                      </div>
+                    </div>
                   ))}
                 </div>
               )}
@@ -508,49 +520,62 @@ const sendToWebhook = async (message: string, webhookUrl: string) => {
           </div>
         )}
 
+        {isBlocked && (
+          <div className="flex justify-center p-4">
+            <div className="bg-red-500/10 border border-red-500/20 text-red-400 text-[10px] font-bold uppercase tracking-widest px-6 py-4 rounded-2xl text-center w-full backdrop-blur-md">
+              Has alcanzado el límite de 10 mensajes. <br />
+              <span className="text-white/60 lowercase font-light mt-1 block">Por seguridad y demostración, el chat se ha bloqueado.</span>
+            </div>
+          </div>
+        )}
+
         <div ref={messagesEndRef} />
       </div>
 
-      <div className="flex space-x-2 px-4 pb-4">
-        <textarea
-          value={inputText}
-          onChange={(e) => setInputText(e.target.value)}
-          onKeyDown={handleKeyPress}
-          placeholder="Escribe tu mensaje... (Ctrl+Enter para salto de línea)"
-          className="flex-1 bg-white/10 text-white placeholder-white/40 px-4 py-2 rounded-lg border border-white/20 focus:outline-none focus:bg-white/15 transition-all duration-200 hover:border-white/30 hover:bg-white/15 chat-input resize-none"
-          style={{
-            minHeight: '44px',
-            maxHeight: '120px',
-            borderColor: `${theme.primary}20`
-          }}
-          onFocus={(e) => {
-            e.target.style.borderColor = `${theme.primary}50`;
-          }}
-          onBlur={(e) => {
-            e.target.style.borderColor = `${theme.primary}20`;
-          }}
-        />
+      <div className="flex gap-3 px-4 pb-4 sm:pb-2 relative z-10 mt-auto">
+        <div className="relative flex-1 group">
+          <div className="absolute -inset-0.5 bg-gradient-to-r from-white/10 to-white/5 rounded-[2rem] blur opacity-0 group-hover:opacity-100 transition duration-500 pointer-events-none" style={{ background: `linear-gradient(90deg, ${theme.primary}30, ${theme.secondary}30)` }}></div>
+          <textarea
+            rows={1}
+            value={inputText}
+            onChange={(e) => setInputText(e.target.value)}
+            onKeyDown={handleKeyPress}
+            disabled={isBlocked}
+            placeholder={isBlocked ? "Chat de prueba bloqueado" : "Escribe tu mensaje..."}
+            className={cn(
+              "relative w-full bg-white/5 backdrop-blur-2xl text-white placeholder-white/40 px-6 py-4 rounded-[2rem] border border-white/10 focus:outline-none focus:bg-white/10 transition-all duration-300 hover:border-white/30 chat-input resize-none shadow-lg z-10 overflow-hidden",
+              isBlocked && "opacity-50 cursor-not-allowed"
+            )}
+            style={{
+              height: '56px',
+              minHeight: '56px',
+              maxHeight: '120px',
+              lineHeight: '24px',
+              boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.05)'
+            }}
+            onFocus={(e) => {
+              e.target.style.borderColor = `${theme.primary}80`;
+              e.currentTarget.parentElement!.querySelector('.absolute')!.classList.add('opacity-100');
+            }}
+            onBlur={(e) => {
+              e.target.style.borderColor = `rgba(255,255,255,0.1)`;
+              e.currentTarget.parentElement!.querySelector('.absolute')!.classList.remove('opacity-100');
+            }}
+          />
+        </div>
         <button
           onClick={handleSend}
           disabled={!inputText.trim()}
-          className="text-white px-4 py-2 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105 disabled:hover:scale-100 send-button"
+          className="relative text-white rounded-full transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105 disabled:hover:scale-100 send-button font-medium flex items-center justify-center min-w-[56px] h-[56px] group overflow-hidden shadow-xl"
           style={{
-            background: `${theme.primary}30`,
-            border: `1px solid ${theme.primary}40`
-          }}
-          onMouseEnter={(e) => {
-            if (!inputText.trim()) return;
-            e.currentTarget.style.background = `${theme.primary}40`;
-            e.currentTarget.style.borderColor = `${theme.primary}60`;
-            e.currentTarget.style.boxShadow = `0 8px 25px ${theme.primary}33`;
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.background = `${theme.primary}30`;
-            e.currentTarget.style.borderColor = `${theme.primary}40`;
-            e.currentTarget.style.boxShadow = 'none';
+            background: `linear-gradient(135deg, ${theme.primary} 0%, ${theme.secondary} 100%)`,
+            boxShadow: `0 8px 25px -5px ${theme.primary}60`
           }}
         >
-          Enviar
+          <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+          <svg className="w-5 h-5 relative z-10 translate-x-[-1px] group-hover:translate-x-[2px] group-hover:-translate-y-[2px] transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+          </svg>
         </button>
       </div>
     </div>

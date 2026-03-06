@@ -26,6 +26,9 @@ export function ChatInterface({ show_header = true }: { show_header?: boolean })
     const timestamp = new Date().toISOString();
     const sessionId = CHAT_CONFIG.generateSessionId();
 
+    // Hardcodear temporalmente el agente de salud para asegurar que use el webhook correcto
+    const currentAgent = 'salud';
+
     const userMessage: Message = {
       id: messageId,
       role: 'user',
@@ -36,22 +39,54 @@ export function ChatInterface({ show_header = true }: { show_header?: boolean })
     setIsLoading(true);
 
     try {
-      const messageData = {
-        message: content,
-        conversationId: conversationId,
-        messageId: messageId,
-        timestamp: timestamp
-      };
+      // Construir el payload complejo que espera n8n (basado en el componente Chat.tsx)
+      const payload = [{
+        headers: {
+          "host": "n8n.srv1054162.hstgr.cloud",
+          "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36",
+          "content-length": "98",
+          "accept": "*/*",
+          "accept-encoding": "gzip, deflate, br, zstd",
+          "accept-language": "es-ES,es;q=0.9",
+          "content-type": "application/json",
+          "origin": "http://localhost:3001",
+          "priority": "u=1, i",
+          "referer": "http://localhost:3001/",
+          "sec-ch-ua": "\"Chromium\";v=\"140\", \"Not=A?Brand\";v=\"24\", \"Brave\";v=\"140\"",
+          "sec-ch-ua-mobile": "?0",
+          "sec-ch-ua-platform": "\"Windows\"",
+          "sec-fetch-dest": "empty",
+          "sec-fetch-mode": "cors",
+          "sec-fetch-site": "cross-site",
+          "sec-gpc": "1",
+          "x-forwarded-for": "181.32.155.251",
+          "x-forwarded-host": "n8n.srv1054162.hstgr.cloud",
+          "x-forwarded-port": "443",
+          "x-forwarded-proto": "https",
+          "x-forwarded-server": "3c54fcca5a76",
+          "x-real-ip": "181.32.155.251"
+        },
+        params: {},
+        query: {},
+        body: {
+          "conversationId": conversationId,
+          "messageId": messageId,
+          "message": content,
+          "createdAt": timestamp
+        },
+        "webhookUrl": WEBHOOK_CONFIG[currentAgent],
+        "executionMode": "production"
+      }];
 
-      console.log('Enviando mensaje al webhook:', JSON.stringify(messageData, null, 2));
+      console.log('Enviando mensaje al webhook (payload complejo):', JSON.stringify(payload, null, 2));
 
-      const response = await fetch(WEBHOOK_CONFIG[CHAT_CONFIG.defaultAgent], {
+      const response = await fetch(WEBHOOK_CONFIG[currentAgent], {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
         },
-        body: JSON.stringify(messageData),
+        body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
@@ -64,17 +99,46 @@ export function ChatInterface({ show_header = true }: { show_header?: boolean })
         const data = await response.json();
         console.log('Respuesta recibida de n8n:', data);
 
-        // Procesar diferentes formatos de respuesta
-        agentResponseContent = data.reply || data.response || data.message;
+        // Procesar diferentes formatos de respuesta que n8n puede devolver
+        agentResponseContent = '';
 
         // Si la respuesta es un array, tomar el primer elemento
         if (Array.isArray(data) && data.length > 0) {
-          agentResponseContent = data[0].reply || data[0].response || data[0].message;
+          const firstResponse = data[0];
+          agentResponseContent = firstResponse.reply ||
+                            firstResponse.response?.message ||
+                            firstResponse.response?.reply ||
+                            firstResponse.message ||
+                            firstResponse.output ||
+                            JSON.stringify(firstResponse);
+        } else if (typeof data === 'object' && data !== null) {
+          // Procesar objeto único
+          agentResponseContent = data.reply ||
+                            data.response?.message ||
+                            data.response?.reply ||
+                            data.message ||
+                            data.output ||
+                            data.text ||
+                            JSON.stringify(data);
+        } else if (typeof data === 'string') {
+          // Si es un string directo
+          agentResponseContent = data;
+        } else {
+          // Si no hay contenido válido, mostrar el JSON completo
+          agentResponseContent = 'Recibí una respuesta del webhook, pero no pude procesarla correctamente. Respuesta: ' + JSON.stringify(data);
         }
+
       } catch (parseError) {
-        console.log('Error al parsear respuesta del webhook, usando respuesta de prueba');
-        // Respuesta de prueba mientras el webhook no funciona
-        agentResponseContent = `Hola! Soy el asistente de salud. He recibido tu mensaje: "${content}". El webhook de n8n está siendo configurado. Esta es una respuesta temporal para que puedas ver cómo funciona la interfaz.`;
+        console.log('Error al parsear respuesta del webhook:', parseError);
+        const textResponse = await response.text();
+        console.log('Respuesta como texto:', textResponse);
+
+        // Si falla el JSON, intentar usar el texto directamente
+        if (textResponse && textResponse.trim()) {
+          agentResponseContent = textResponse;
+        } else {
+          agentResponseContent = `Hola! Soy el asistente de salud. He recibido tu mensaje: "${content}". El webhook de n8n está siendo configurado. Esta es una respuesta temporal para que puedas ver cómo funciona la interfaz.`;
+        }
       }
 
       if (typeof agentResponseContent === 'string') {

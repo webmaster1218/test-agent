@@ -42,6 +42,12 @@ module.exports = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        brand: {
+          50: '#f0f9ff',
+          500: '#0ea5e9',
+          600: '#0284c7',
+          900: '#0c4a6e'
+        }
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -54,6 +60,8 @@ module.exports = {
         'pulse-slow': 'pulse 3s infinite',
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
+        'float': 'float 6s ease-in-out infinite',
+        'marquee': 'marquee 30s linear infinite',
       },
       keyframes: {
         fadeIn: {
@@ -68,6 +76,14 @@ module.exports = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: 0 },
         },
+        float: {
+          '0%, 100%': { transform: 'translateY(0) rotate(-6deg)' },
+          '50%': { transform: 'translateY(-10px) rotate(-4deg)' },
+        },
+        marquee: {
+          '0%': { transform: 'translateX(0)' },
+          '100%': { transform: 'translateX(-50%)' },
+        }
       },
     },
   },

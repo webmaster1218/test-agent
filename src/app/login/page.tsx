@@ -65,7 +65,7 @@ export default function LoginPage() {
           <Card className="border-white/10 bg-black/40 backdrop-blur-xl hover:border-white/20 transition-all duration-300 hover:scale-105 group">
             <CardHeader className="text-center">
               <div className="mx-auto w-40 h-40 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform"
-                   style={{ backgroundColor: 'transparent' }}>
+                style={{ backgroundColor: 'transparent' }}>
                 <img
                   src="/images/logo-vivefelizsindolor.png"
                   alt="Logo Vive Feliz Sin Dolor"
@@ -108,7 +108,7 @@ export default function LoginPage() {
           <Card className="border-white/10 bg-black/40 backdrop-blur-xl hover:border-white/20 transition-all duration-300 hover:scale-105 group">
             <CardHeader className="text-center">
               <div className="mx-auto w-40 h-40 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform"
-                   style={{ backgroundColor: 'transparent' }}>
+                style={{ backgroundColor: 'transparent' }}>
                 <img
                   src="/images/logo-emiliano.png"
                   alt="Logo Emilianos la Taquería"
@@ -148,21 +148,9 @@ export default function LoginPage() {
           </Card>
         </div>
 
-        {/* Información de seguridad */}
-        <div className="mt-12 text-center max-w-md">
-          <div className="bg-white/5 backdrop-blur-sm rounded-lg p-4 border border-white/10">
-            <p className="text-xs text-white/50 mb-2">
-              <Shield className="h-3 w-3 inline mr-1" />
-              Acceso seguro con credenciales de administrador
-            </p>
-            <p className="text-xs text-white/30">
-              Usuario: <span className="font-mono">admin</span> |
-              Contraseña: <span className="font-mono">FB1218$</span>
-            </p>
-          </div>
-        </div>
 
-            </div>
+
+      </div>
     </div>
   );
 }

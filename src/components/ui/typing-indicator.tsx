@@ -17,7 +17,7 @@ export default function TypingIndicator({ className = '' }: TypingIndicatorProps
           <div className="w-1.5 h-1.5 bg-primary rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
         </div>
       </div>
-      <span className="text-xs text-muted-foreground font-medium">Marcos está escribiendo...</span>
+      <span className="text-xs text-muted-foreground font-medium">FABRICA DE WINNERS está escribiendo...</span>
     </div>
   );
 }

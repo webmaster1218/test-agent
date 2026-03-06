@@ -17,6 +17,7 @@ import { format, subDays, isWithinInterval, parse, differenceInSeconds } from 'd
 import { es } from 'date-fns/locale';
 import { DashboardChat } from '@/components/dashboard-chat';
 import { ChatInterface } from '@/components/chat-interface';
+import { DashboardSaludChat } from '@/components/dashboard-salud-chat';
 import { analyzeSentiment } from '@/app/actions';
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DashboardDataTable } from '@/components/dashboard-data-table';
@@ -1050,11 +1051,7 @@ export default function DashboardPage() {
   const [timeFilter, setTimeFilter] = useState<string>('all');
   const [customDateRange, setCustomDateRange] = useState<DateRange | undefined>();
 
-  // Estado para el chat
-  const [chatMessage, setChatMessage] = useState('');
-  const [chatMessages, setChatMessages] = useState<Array<{id: string, message: string, isUser: boolean}>>([]);
-  const [isChatLoading, setIsChatLoading] = useState(false);
-
+  
   const [activeIntentIndex, setActiveIntentIndex] = useState(0);
   const [activeEngagementIndex, setActiveEngagementIndex] = useState(0);
   const [volumeChartMetric, setVolumeChartMetric] = useState<'conversations' | 'messages'>('conversations');
@@ -1578,36 +1575,7 @@ export default function DashboardPage() {
     setDate({ from: startDate, to: endDate });
   };
 
-  const handleSendMessage = async () => {
-    if (!chatMessage.trim() || isChatLoading) return;
-
-    const userMessage = {
-      id: Date.now().toString(),
-      message: chatMessage.trim(),
-      isUser: true
-    };
-
-    setChatMessages(prev => [...prev, userMessage]);
-    setChatMessage('');
-    setIsChatLoading(true);
-
-    try {
-      // Simular respuesta del bot (conectar con webhook real después)
-      setTimeout(() => {
-        const botResponse = {
-          id: (Date.now() + 1).toString(),
-          message: "Entendido. Estoy procesando tu mensaje y te responderé en breve.",
-          isUser: false
-        };
-        setChatMessages(prev => [...prev, botResponse]);
-        setIsChatLoading(false);
-      }, 1000);
-    } catch (error) {
-      console.error('Error sending message:', error);
-      setIsChatLoading(false);
-    }
-  };
-
+  
   
   const tooltipStyle = {
       contentStyle: {
@@ -2123,96 +2091,9 @@ export default function DashboardPage() {
             </Card>
           </div>
 
-          {/* Chat Minimalista (25%) */}
+          {/* Chat de Salud con Webhook Real (25%) */}
           <div className="md:col-span-1">
-            <Card className="p-3 h-full flex flex-col">
-              <div className="flex items-center justify-between mb-2">
-                <div>
-                  <h3 className="text-sm font-medium">Chat</h3>
-                  <p className="text-xs text-muted-foreground">Asistente virtual</p>
-                </div>
-              </div>
-
-              {/* Área de mensajes */}
-              <div className="flex-1 mb-3 min-h-[200px] max-h-[250px] overflow-y-auto">
-                <div className="space-y-2">
-                  {chatMessages.length === 0 ? (
-                    <div className="text-center text-muted-foreground text-xs py-8">
-                      <MessageSquare className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                      <p>Envía un mensaje para comenzar</p>
-                    </div>
-                  ) : (
-                    chatMessages.map((msg) => (
-                      <div key={msg.id} className={`flex ${msg.isUser ? 'justify-end' : 'justify-start'}`}>
-                        <div className={`max-w-[80%] ${msg.isUser ? 'order-2' : 'order-1'}`}>
-                          <div className={`px-3 py-2 rounded-lg text-xs ${
-                            msg.isUser
-                              ? 'bg-primary text-primary-foreground'
-                              : 'bg-muted text-muted-foreground'
-                          }`}>
-                            {msg.message}
-                          </div>
-                        </div>
-                        <div className={`w-6 h-6 ${msg.isUser ? 'order-1 ml-2' : 'order-2 mr-2'}`}>
-                          <Avatar className="w-6 h-6">
-                            <AvatarFallback className={`text-[10px] ${
-                              msg.isUser ? 'bg-primary text-primary-foreground' : 'bg-muted'
-                            }`}>
-                              {msg.isUser ? 'Tú' : 'AI'}
-                            </AvatarFallback>
-                          </Avatar>
-                        </div>
-                      </div>
-                    ))
-                  )}
-                  {isChatLoading && (
-                    <div className="flex justify-start">
-                      <div className="flex items-center space-x-2 text-muted-foreground text-xs">
-                        <div className="w-6 h-6">
-                          <Avatar className="w-6 h-6">
-                            <AvatarFallback className="bg-muted">AI</AvatarFallback>
-                          </Avatar>
-                        </div>
-                        <div className="flex space-x-1">
-                          <div className="w-1 h-1 bg-current rounded-full animate-bounce"></div>
-                          <div className="w-1 h-1 bg-current rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                          <div className="w-1 h-1 bg-current rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Input del chat */}
-              <div className="flex space-x-2">
-                <Input
-                  value={chatMessage}
-                  onChange={(e) => setChatMessage(e.target.value)}
-                  placeholder="Escribe un mensaje..."
-                  className="flex-1 text-xs"
-                  onKeyPress={(e) => {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                      e.preventDefault();
-                      handleSendMessage();
-                    }
-                  }}
-                  disabled={isChatLoading}
-                />
-                <Button
-                  size="sm"
-                  onClick={handleSendMessage}
-                  disabled={!chatMessage.trim() || isChatLoading}
-                  className="px-3"
-                >
-                  {isChatLoading ? (
-                    <Loader className="h-3 w-3 animate-spin" />
-                  ) : (
-                    <MessageCircle className="h-3 w-3" />
-                  )}
-                </Button>
-              </div>
-            </Card>
+            <DashboardSaludChat className="h-full" />
           </div>
         </div>
       </div>

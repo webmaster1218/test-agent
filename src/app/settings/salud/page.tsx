@@ -121,7 +121,7 @@ export default function SettingsSaludPage() {
   const collectFormDataForSupabase = (): ConfiguracionAgente => {
     return {
       agente: {
-        nombre: agentNameRef.current?.value || 'Marcos',
+        nombre: agentNameRef.current?.value || 'FABRICA DE WINNERS',
         personalidad: selectedPersonality,
         saludo: agentGreetingRef.current?.value || '',
         regionalismos: agentRegionalismsRef.current?.value || '',
@@ -156,7 +156,7 @@ export default function SettingsSaludPage() {
       timestamp: new Date().toISOString(),
       configuration: {
         agent: {
-          name: agentNameRef.current?.value || 'Marcos',
+          name: agentNameRef.current?.value || 'FABRICA DE WINNERS',
           personality: selectedPersonality,
           greeting: agentGreetingRef.current?.value || '',
           regionalisms: agentRegionalismsRef.current?.value || '',
@@ -187,7 +187,7 @@ export default function SettingsSaludPage() {
 
   // Función para enviar datos al webhook
   const sendToWebhook = async (data: any) => {
-    const webhookUrl = 'https://n8n.srv1054162.hstgr.cloud/webhook/fafcc4ec-7a5c-4efa-978b-95b1f3d2bac2';
+    const webhookUrl = 'https://n8n.srv1054162.hstgr.cloud/webhook/29aad504-0017-47b9-b2b5-57800b5649f8';
 
     try {
       const response = await fetch(webhookUrl, {
@@ -260,11 +260,10 @@ export default function SettingsSaludPage() {
       <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6">
         {/* Alerta de estado */}
         {saveStatus !== 'idle' && (
-          <Alert className={`border-2 ${
-            saveStatus === 'saved' ? 'border-text-blue-500/50 bg-text-blue-500/10' :
+          <Alert className={`border-2 ${saveStatus === 'saved' ? 'border-text-blue-500/50 bg-text-blue-500/10' :
             saveStatus === 'saving' ? 'border-text-blue-500/50 bg-text-blue-500/10' :
-            'border-red-500/50 bg-red-500/10'
-          }`}>
+              'border-red-500/50 bg-red-500/10'
+            }`}>
             {saveStatus === 'saving' && (
               <>
                 <AlertCircle style={{ color: getAgentColor('primary') }} className="h-4 w-4 animate-spin" />
@@ -301,60 +300,60 @@ export default function SettingsSaludPage() {
 
           {/* Controles */}
           <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
-          <Dialog open={showSaveDialog} onOpenChange={setShowSaveDialog}>
-            <DialogTrigger asChild>
-              <Button
-                size="sm"
-                style={{ background: `linear-gradient(to right, ${getAgentColor('primary')}, ${getAgentColor('secondary')})` }}
-                className="hover:opacity-90 shadow-lg w-1/2 text-sm px-3 sm:px-4 md:px-6 lg:px-6"
-              >
-                <Save className="mr-2 h-4 w-4" />
-                Guardar Cambios
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-sm mx-4">
-              <DialogHeader>
-                <DialogTitle className="text-lg">Confirmar cambios</DialogTitle>
-                <DialogDescription className="text-sm">
-                  ¿Guardar todos los cambios en la configuración del agente de salud?
-                </DialogDescription>
-              </DialogHeader>
-              <DialogFooter className="flex-col sm:flex-row gap-2 sm:gap-3">
-                <Button variant="outline" onClick={() => setShowSaveDialog(false)} className="w-full sm:w-auto">
-                  Cancelar
-                </Button>
+            <Dialog open={showSaveDialog} onOpenChange={setShowSaveDialog}>
+              <DialogTrigger asChild>
                 <Button
-                  onClick={() => {
-                    setShowSaveDialog(false);
-                    handleSave();
-                  }}
+                  size="sm"
                   style={{ background: `linear-gradient(to right, ${getAgentColor('primary')}, ${getAgentColor('secondary')})` }}
-                  className="w-full sm:w-auto"
+                  className="hover:opacity-90 shadow-lg w-1/2 text-sm px-3 sm:px-4 md:px-6 lg:px-6"
                 >
-                  Confirmar y Guardar
+                  <Save className="mr-2 h-4 w-4" />
+                  Guardar Cambios
                 </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+              </DialogTrigger>
+              <DialogContent className="max-w-sm mx-4">
+                <DialogHeader>
+                  <DialogTitle className="text-lg">Confirmar cambios</DialogTitle>
+                  <DialogDescription className="text-sm">
+                    ¿Guardar todos los cambios en la configuración del agente de salud?
+                  </DialogDescription>
+                </DialogHeader>
+                <DialogFooter className="flex-col sm:flex-row gap-2 sm:gap-3">
+                  <Button variant="outline" onClick={() => setShowSaveDialog(false)} className="w-full sm:w-auto">
+                    Cancelar
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      setShowSaveDialog(false);
+                      handleSave();
+                    }}
+                    style={{ background: `linear-gradient(to right, ${getAgentColor('primary')}, ${getAgentColor('secondary')})` }}
+                    className="w-full sm:w-auto"
+                  >
+                    Confirmar y Guardar
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </div>
         </header>
 
         <Tabs defaultValue="agent" className="space-y-4 sm:space-y-6">
-        <TabsList className="grid w-full max-w-xs grid-cols-2 h-11 sm:h-12 justify-start">
-          <TabsTrigger value="agent" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm px-2 sm:px-4">
-            <Bot className="h-3 w-3 sm:h-4 sm:w-4" />
-            <span className="hidden sm:inline">Agente</span>
-            <span className="sm:hidden">Agte</span>
-          </TabsTrigger>
-          <TabsTrigger value="business" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm px-2 sm:px-4">
-            <Store className="h-3 w-3 sm:h-4 sm:w-4" />
-            <span className="hidden sm:inline">Negocio</span>
-            <span className="sm:hidden">Neg</span>
-          </TabsTrigger>
-        </TabsList>
+          <TabsList className="grid w-full max-w-xs grid-cols-2 h-11 sm:h-12 justify-start">
+            <TabsTrigger value="agent" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm px-2 sm:px-4">
+              <Bot className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">Agente</span>
+              <span className="sm:hidden">Agte</span>
+            </TabsTrigger>
+            <TabsTrigger value="business" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm px-2 sm:px-4">
+              <Store className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">Negocio</span>
+              <span className="sm:hidden">Neg</span>
+            </TabsTrigger>
+          </TabsList>
 
           {/* Pestaña de Configuración del Agente */}
-        <TabsContent value="agent" className="mt-4 sm:mt-6 lg:mt-8 space-y-4 sm:space-y-6 lg:space-y-8">
+          <TabsContent value="agent" className="mt-4 sm:mt-6 lg:mt-8 space-y-4 sm:space-y-6 lg:space-y-8">
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6">
               {/* Identidad y Personalidad */}
               <Card className="p-3 sm:p-4">
@@ -450,12 +449,12 @@ export default function SettingsSaludPage() {
                       id="agent-greeting"
                       placeholder="Escribe el saludo personalizado del agente"
                       className="border-text-blue-500/20 focus:border-text-blue-500 focus:ring-text-blue-500/20 resize-none" style={{
-  scrollbarWidth: 'none',
-  msOverflowStyle: 'none',
-  scrollbarWidth: '0px',
-  WebkitAppearance: 'none',
-  MozAppearance: 'none'
-}}
+                        scrollbarWidth: 'none',
+                        msOverflowStyle: 'none',
+                        scrollbarWidth: '0px',
+                        WebkitAppearance: 'none',
+                        MozAppearance: 'none'
+                      }}
                       rows={3}
                     />
                   </div>
@@ -467,12 +466,12 @@ export default function SettingsSaludPage() {
                       id="agent-regionalisms"
                       placeholder="Escribe expresiones colombianas características"
                       className="border-text-blue-500/20 focus:border-text-blue-500 focus:ring-text-blue-500/20 resize-none" style={{
-  scrollbarWidth: 'none',
-  msOverflowStyle: 'none',
-  scrollbarWidth: '0px',
-  WebkitAppearance: 'none',
-  MozAppearance: 'none'
-}}
+                        scrollbarWidth: 'none',
+                        msOverflowStyle: 'none',
+                        scrollbarWidth: '0px',
+                        WebkitAppearance: 'none',
+                        MozAppearance: 'none'
+                      }}
                       rows={2}
                     />
                   </div>
@@ -566,12 +565,12 @@ export default function SettingsSaludPage() {
                       id="template-reminder"
                       placeholder="Plantilla de mensaje de recordatorio"
                       className="border-text-blue-500/20 focus:border-text-blue-500 focus:ring-text-blue-500/20 resize-none" style={{
-  scrollbarWidth: 'none',
-  msOverflowStyle: 'none',
-  scrollbarWidth: '0px',
-  WebkitAppearance: 'none',
-  MozAppearance: 'none'
-}}
+                        scrollbarWidth: 'none',
+                        msOverflowStyle: 'none',
+                        scrollbarWidth: '0px',
+                        WebkitAppearance: 'none',
+                        MozAppearance: 'none'
+                      }}
                       rows={4}
                     />
                   </div>
@@ -586,12 +585,12 @@ export default function SettingsSaludPage() {
                       id="template-fallback"
                       placeholder="Plantilla de mensaje de escalación"
                       className="border-text-blue-500/20 focus:border-text-blue-500 focus:ring-text-blue-500/20 resize-none" style={{
-  scrollbarWidth: 'none',
-  msOverflowStyle: 'none',
-  scrollbarWidth: '0px',
-  WebkitAppearance: 'none',
-  MozAppearance: 'none'
-}}
+                        scrollbarWidth: 'none',
+                        msOverflowStyle: 'none',
+                        scrollbarWidth: '0px',
+                        WebkitAppearance: 'none',
+                        MozAppearance: 'none'
+                      }}
                       rows={4}
                     />
                   </div>
@@ -765,12 +764,12 @@ export default function SettingsSaludPage() {
                       id="cancellation-policy"
                       placeholder="Política de cancelación"
                       className="border-text-blue-500/20 focus:border-text-blue-500 focus:ring-text-blue-500/20 resize-none" style={{
-  scrollbarWidth: 'none',
-  msOverflowStyle: 'none',
-  scrollbarWidth: '0px',
-  WebkitAppearance: 'none',
-  MozAppearance: 'none'
-}}
+                        scrollbarWidth: 'none',
+                        msOverflowStyle: 'none',
+                        scrollbarWidth: '0px',
+                        WebkitAppearance: 'none',
+                        MozAppearance: 'none'
+                      }}
                       rows={3}
                     />
                   </div>
